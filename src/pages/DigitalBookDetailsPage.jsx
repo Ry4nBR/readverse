@@ -58,6 +58,7 @@ function BookDetails({ book }) {
         </section>}
         {error && <p className={shared.error} role="alert">{error}</p>}
         <div className={shared.actions}>
+          <Link className={shared.secondary} to="editar">Editar livro</Link>
           <button type="button" className={shared.primary} disabled={downloading} onClick={download}>
             {downloading ? 'Buscando arquivo…' : 'Baixar original'}
           </button>

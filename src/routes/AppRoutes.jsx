@@ -5,6 +5,7 @@ import DashboardPage from '../pages/DashboardPage.jsx'
 import DigitalBookDetailsPage from '../pages/DigitalBookDetailsPage.jsx'
 import DigitalShelfPage from '../pages/DigitalShelfPage.jsx'
 import DigitalImportPage from '../pages/DigitalImportPage.jsx'
+import EditDigitalBookPage from '../pages/EditDigitalBookPage.jsx'
 import EditPhysicalBookPage from '../pages/EditPhysicalBookPage.jsx'
 import NewPhysicalBookPage from '../pages/NewPhysicalBookPage.jsx'
 import NotFoundPage from '../pages/NotFoundPage.jsx'
@@ -25,6 +26,7 @@ export default function AppRoutes() {
         <Route path="biblioteca/:bookId/editar" element={<EditPhysicalBookPage />} />
         <Route path="biblioteca-digital" element={<DigitalShelfPage />} />
         <Route path="biblioteca-digital/:bookId" element={<DigitalBookDetailsPage />} />
+        <Route path="biblioteca-digital/:bookId/editar" element={<EditDigitalBookPage />} />
         <Route path="importacao" element={<DigitalImportPage />} />
         <Route path="cadastro" element={<NewPhysicalBookPage />} />
         {futureSections.map(({ to, label }) => (
