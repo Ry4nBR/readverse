@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react'
 import DeleteBookDialog from '../components/DeleteBookDialog.jsx'
+import ShelfContents from '../components/ShelfContents.jsx'
+import ShelfOrganizer from '../components/ShelfOrganizer.jsx'
 import ShelfForm from '../components/ShelfForm.jsx'
 import shared from '../components/PhysicalBook.module.css'
 import styles from './CustomShelvesPage.module.css'
-import { createShelf, deleteShelf, listShelves, reorderShelf, ShelfError, updateShelf } from '../services/customShelves.js'
+import { createShelf, deleteShelf, listShelves, moveShelfBook, reorderShelf, ShelfError, updateShelf } from '../services/customShelves.js'
+import { listShelfBooks } from '../services/shelfCatalog.js'
 
 export default function CustomShelvesPage() {
   const [shelves, setShelves] = useState(null)
+  const [books, setBooks] = useState(null)
+  const [bookError, setBookError] = useState(false)
   const [editing, setEditing] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -17,6 +22,9 @@ export default function CustomShelvesPage() {
     let active = true
     listShelves().then((data) => { if (active) setShelves(data) }, () => {
       if (active) setError('Não foi possível carregar as estantes neste navegador.')
+    })
+    listShelfBooks().then((data) => { if (active) setBooks(data) }, () => {
+      if (active) setBookError(true)
     })
     return () => { active = false }
   }, [attempt])
@@ -52,6 +60,8 @@ export default function CustomShelvesPage() {
     setNotice('Estante excluída. Os livros continuam nas bibliotecas.')
   }
 
+  const catalog = new Map(books?.map((book) => [book.key, book]))
+
   return (
     <section className={shared.page}>
       <header className={shared.pageHeader}>
@@ -63,6 +73,11 @@ export default function CustomShelvesPage() {
       {notice && <p role="status">{notice}</p>}
       {editing && <ShelfForm key={editing.id ?? 'nova'} shelf={editing.id ? editing : undefined}
         onSave={save} onCancel={() => { setError(''); setEditing(null) }} busy={busy} />}
+      {shelves?.length > 0 && (bookError ? <p role="alert" className={shared.error}>Não foi possível carregar os livros.</p> :
+        !books ? <p role="status">Carregando livros…</p> :
+          books.length > 0 ? <ShelfOrganizer books={books} shelves={shelves} busy={busy}
+            onMove={(book, destination) => change(() => moveShelfBook(book, destination), 'Localização do livro atualizada.')} /> :
+            <p className={shared.panel}>Cadastre ou importe livros para organizá-los aqui.</p>)}
       {!shelves ? (error ? (
         <div><button type="button" className={shared.secondary} onClick={() => {
           setError('')
@@ -88,6 +103,7 @@ export default function CustomShelvesPage() {
                     failure="Não foi possível excluir a estante. Tente novamente." onDelete={() => remove(shelf.id)} />
                 </div>
               </div>
+              {books && <ShelfContents shelf={shelf} catalog={catalog} />}
             </li>
           ))}
         </ul>

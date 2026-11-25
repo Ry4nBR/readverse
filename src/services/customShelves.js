@@ -74,4 +74,17 @@ export const reorderShelf = (id, direction) => accessShelves((shelves) => {
   return ordered
 })
 
+export const moveShelfBook = (bookKey, destination) => accessShelves((shelves) => {
+  if (!/^(physical|digital):[^:]+$/.test(bookKey)) throw new ShelfError('Livro inválido.')
+  if (destination && !shelves.some((shelf) => shelf.id === destination)) {
+    throw new ShelfError('A estante de destino já foi excluída.')
+  }
+  return shelves.map((shelf) => {
+    if (shelf.id === destination && shelf.books.includes(bookKey)) return shelf
+    const books = shelf.books.filter((key) => key !== bookKey)
+    if (shelf.id === destination) books.push(bookKey)
+    return { ...shelf, books }
+  })
+})
+
 export const deleteShelf = (id) => accessShelves((shelves) => shelves.filter((shelf) => shelf.id !== id))
