@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import PhysicalBookCard from '../components/PhysicalBookCard.jsx'
 import styles from '../components/PhysicalBook.module.css'
-import { listPhysicalBooks } from '../services/physicalBooks.js'
+import { usePhysicalBooks } from '../hooks/usePhysicalBooks.js'
 import { readingStatuses } from '../utils/bookForm.js'
 
 function searchKey(value) {
@@ -11,22 +11,10 @@ function searchKey(value) {
 
 export default function PhysicalShelfPage() {
   const { state } = useLocation()
-  const [books, setBooks] = useState(null)
-  const [loadError, setLoadError] = useState(false)
-  const [attempt, setAttempt] = useState(0)
+  const { books, loadError, retry } = usePhysicalBooks()
   const [query, setQuery] = useState('')
   const [genre, setGenre] = useState('')
   const [status, setStatus] = useState('')
-
-  useEffect(() => {
-    let active = true
-    listPhysicalBooks().then((entries) => {
-      if (active) setBooks(entries.sort((a, b) => b.createdAt - a.createdAt))
-    }, () => {
-      if (active) setLoadError(true)
-    })
-    return () => { active = false }
-  }, [attempt])
 
   const genres = new Map()
   for (const book of books ?? []) {
@@ -51,10 +39,7 @@ export default function PhysicalShelfPage() {
       {loadError ? (
         <div className={styles.panel}>
           <p role="alert" className={styles.error}>Não foi possível carregar a estante neste navegador.</p>
-          <div><button type="button" className={styles.secondary} onClick={() => {
-            setLoadError(false)
-            setAttempt((current) => current + 1)
-          }}>Tentar novamente</button></div>
+          <div><button type="button" className={styles.secondary} onClick={retry}>Tentar novamente</button></div>
         </div>
       ) : !books ? <p role="status">Carregando estante…</p> : books.length === 0 ? (
         <p className={styles.panel}>Sua estante está vazia. Cadastre um livro para começar.</p>

@@ -50,6 +50,8 @@
 .empty h2 { font: 700 1.5rem var(--serif); }
 .empty p { color: var(--muted); }
 
+.readingList { margin: 0; padding: 0; list-style: none; overflow-wrap: anywhere; }
+
 @media (max-width: 32rem) {
   .summary { grid-template-columns: 1fr; }
   .intro { padding: 1.5rem; }
