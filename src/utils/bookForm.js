@@ -1,10 +1,6 @@
 import { isValidIsbn } from './isbn.js'
 
-export const readingStatuses = {
-  toRead: 'Quero ler',
-  reading: 'Lendo',
-  finished: 'Concluído',
-}
+export { readingStatuses } from './reading.js'
 
 export const emptyBook = {
   title: '', author: '', publisher: '', isbn: '', year: '', description: '',
