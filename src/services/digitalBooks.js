@@ -1,4 +1,5 @@
-import { applyReading, ReadingError } from '../utils/reading.js'
+import { applyReading, readingOf, ReadingError } from '../utils/reading.js'
+import { readerPosition, readerProgress } from '../utils/readerPosition.js'
 import { publishBookChange } from './bookChanges.js'
 
 const databaseName = 'bookshelf-digital'
@@ -114,7 +115,7 @@ export function updateDigitalBook(id, metadata) {
   }).then(publishBookChange)
 }
 
-export function updateDigitalReading(id, changes) {
+function updateReadingRecord(id, transform) {
   return transact([bookStore], 'readwrite', (transaction, done, fail) => {
     const store = transaction.objectStore(bookStore)
     const request = store.get(id)
@@ -122,7 +123,7 @@ export function updateDigitalReading(id, changes) {
       const book = request.result
       if (!book) return fail(new DigitalStorageError('O livro digital não está mais na biblioteca.'))
       try {
-        const updated = { ...book, ...applyReading(book, changes) }
+        const updated = transform(book)
         store.put(updated)
         done(updated)
       } catch (error) {
@@ -130,6 +131,20 @@ export function updateDigitalReading(id, changes) {
       }
     }
   }).then(publishBookChange)
+}
+
+export function updateDigitalReading(id, changes) {
+  return updateReadingRecord(id, (book) => ({ ...book, ...applyReading(book, changes) }))
+}
+
+export async function saveDigitalReaderPosition(id, format, value, percentage) {
+  const position = readerPosition(format, value)
+  return updateReadingRecord(id, (book) => {
+    const reading = readingOf(book)
+    if (reading.status === 'finished') return { ...book, readerPosition: position }
+    const changes = { status: 'reading', progress: readerProgress(reading.progress, percentage) }
+    return { ...book, ...applyReading(book, changes), readerPosition: position }
+  })
 }
 
 export function deleteDigitalBook(id) {

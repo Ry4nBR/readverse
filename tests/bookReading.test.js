@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { indexedDB } from 'fake-indexeddb'
 import { savePhysicalBook, getPhysicalBook } from '../src/services/physicalBooks.js'
-import { saveDigitalBook, getDigitalBook, getDigitalFile, updateDigitalBook } from '../src/services/digitalBooks.js'
+import { saveDigitalBook, getDigitalBook, getDigitalFile, updateDigitalBook, saveDigitalReaderPosition } from '../src/services/digitalBooks.js'
 import { updateBookReading } from '../src/services/bookReading.js'
 import { subscribeToBookChanges } from '../src/services/bookChanges.js'
 
@@ -31,4 +31,23 @@ test('grava a leitura nos dois catálogos e mantém arquivos e metadados de edi�
   } finally {
     unsubscribe()
   }
+})
+
+test('a última página atualiza a posição sem concluir e voltar não reduz progresso', async () => {
+  const file = new globalThis.File(['original'], 'teste.pdf')
+  const book = await saveDigitalBook({ file, format: 'pdf', hash: 'leitor' }, { title: 'PDF', author: 'Autora' })
+  const last = await saveDigitalReaderPosition(book.id, 'pdf', 7, 100)
+  assert.equal(last.status, 'reading')
+  assert.equal(last.reading.progress, 99)
+  assert.equal(last.reading.completedDate, '')
+  assert.ok(last.reading.startDate)
+  const earlier = await saveDigitalReaderPosition(book.id, 'pdf', 2, 1)
+  assert.deepEqual(earlier.readerPosition, { format: 'pdf', page: 2 })
+  assert.equal(earlier.reading.progress, 99)
+  await updateBookReading('digital', book.id, { status: 'finished' })
+  const completed = await saveDigitalReaderPosition(book.id, 'pdf', 1, 0)
+  assert.equal(completed.status, 'finished')
+  assert.equal(completed.reading.progress, 100)
+  assert.ok(completed.reading.completedDate)
+  await assert.rejects(saveDigitalReaderPosition(book.id, 'pdf', 0, 0), /Posição/)
 })
