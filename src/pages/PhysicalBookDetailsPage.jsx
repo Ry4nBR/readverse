@@ -3,13 +3,13 @@ import DeletePhysicalBook from '../components/DeletePhysicalBook.jsx'
 import BookCover from '../components/BookCover.jsx'
 import PhysicalBookRecord from '../components/PhysicalBookRecord.jsx'
 import styles from '../components/PhysicalBook.module.css'
-import { readingStatuses } from '../utils/bookForm.js'
+import BookReadingForm from '../components/BookReadingForm.jsx'
 
 function BookDetails({ book }) {
   const { state } = useLocation()
   const rows = [
     ['Editora', book.publisher], ['Ano de publicação', book.year], ['ISBN', book.isbn],
-    ['Gênero', book.genre], ['Status de leitura', readingStatuses[book.status]],
+    ['Gênero', book.genre],
   ].filter(([, value]) => value)
 
   return (
@@ -38,6 +38,7 @@ function BookDetails({ book }) {
           <DeletePhysicalBook key={book.id} book={book} />
         </div>
       </article>
+      <BookReadingForm key={book.id} book={book} kind="physical" />
     </section>
   )
 }

@@ -5,7 +5,7 @@ import DeleteBookDialog from '../components/DeleteBookDialog.jsx'
 import DigitalBookRecord from '../components/DigitalBookRecord.jsx'
 import shared from '../components/PhysicalBook.module.css'
 import { deleteDigitalBook, getDigitalFile } from '../services/digitalBooks.js'
-import { readingStatuses } from '../utils/bookForm.js'
+import BookReadingForm from '../components/BookReadingForm.jsx'
 
 const dateFormat = new Intl.DateTimeFormat('pt-BR')
 const sizeFormat = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 })
@@ -20,7 +20,6 @@ function BookDetails({ book }) {
   const rows = [
     ['Arquivo', book.fileName], ['Formato', book.format.toUpperCase()], ['Tamanho', size],
     ['Importado em', dateFormat.format(book.importedAt)], ['Gênero', book.genre],
-    ['Status de leitura', readingStatuses[book.status]],
   ].filter(([, value]) => value)
 
   async function remove() {
@@ -73,6 +72,7 @@ function BookDetails({ book }) {
             onDelete={remove} />
         </div>
       </article>
+      <BookReadingForm key={book.id} book={book} kind="digital" />
     </section>
   )
 }
