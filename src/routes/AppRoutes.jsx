@@ -4,6 +4,7 @@ import DashboardPage from '../pages/DashboardPage.jsx'
 
 import NewPhysicalBookPage from '../pages/NewPhysicalBookPage.jsx'
 import NotFoundPage from '../pages/NotFoundPage.jsx'
+import PhysicalBookDetailsPage from '../pages/PhysicalBookDetailsPage.jsx'
 import PhysicalShelfPage from '../pages/PhysicalShelfPage.jsx'
 import SectionPage from '../pages/SectionPage.jsx'
 import { sections } from './sections.js'
@@ -16,6 +17,7 @@ export default function AppRoutes() {
       <Route element={<LibraryLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="biblioteca" element={<PhysicalShelfPage />} />
+        <Route path="biblioteca/:bookId" element={<PhysicalBookDetailsPage />} />
         <Route path="cadastro" element={<NewPhysicalBookPage />} />
         {futureSections.map(({ to, label }) => (
           <Route key={to} path={to} element={<SectionPage title={label} />} />
