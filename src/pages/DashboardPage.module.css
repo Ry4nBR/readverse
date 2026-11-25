@@ -49,3 +49,8 @@
 
 .empty h2 { font: 700 1.5rem var(--serif); }
 .empty p { color: var(--muted); }
+
+@media (max-width: 32rem) {
+  .summary { grid-template-columns: 1fr; }
+  .intro { padding: 1.5rem; }
+}

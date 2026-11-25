@@ -21,3 +21,12 @@
 }
 
 .skipLink:focus { transform: none; }
+
+@media (max-width: 56rem) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .content { padding: 2rem 1.5rem; }
+}
+
+@media (max-width: 30rem) {
+  .content { padding: 1.25rem 1rem; }
+}

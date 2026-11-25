@@ -9,3 +9,14 @@
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
+
+@media (max-width: 56rem) {
+  .header {
+    min-height: 3rem;
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .header { padding-inline: 1rem; }
+}

@@ -36,3 +36,17 @@
 }
 
 .link[aria-current='page'] { font-weight: 650; }
+
+@media (max-width: 56rem) {
+  .sidebar {
+    padding: 1rem;
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: .75rem;
+  }
+}
