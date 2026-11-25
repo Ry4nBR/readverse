@@ -1,0 +1,51 @@
+.dashboard { display: grid; gap: 1.5rem; }
+
+.intro {
+  padding: 2.5rem;
+  border-radius: var(--radius);
+  color: #fffdf8;
+  background: var(--accent);
+}
+
+.intro h1 {
+  font: 700 clamp(2rem, 5vw, 3.5rem) var(--serif);
+  margin-bottom: .5rem;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.card, .empty {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 1.25rem;
+}
+
+.card dt {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: var(--muted);
+}
+
+.card dd {
+  margin: .5rem 0 0;
+  font: 700 2rem var(--serif);
+}
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: .5rem;
+  padding: 2.5rem 1rem;
+  color: var(--accent);
+  text-align: center;
+}
+
+.empty h2 { font: 700 1.5rem var(--serif); }
+.empty p { color: var(--muted); }
