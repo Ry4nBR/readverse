@@ -7,7 +7,7 @@ import shared from '../components/PhysicalBook.module.css'
 import { deleteDigitalBook, getDigitalFile } from '../services/digitalBooks.js'
 import BookReadingForm from '../components/BookReadingForm.jsx'
 
-import { canReadDigitalBook } from '../services/readerFile.js'
+import DigitalReadAction from '../components/reader/DigitalReadAction.jsx'
 
 const dateFormat = new Intl.DateTimeFormat('pt-BR')
 const sizeFormat = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 })
@@ -66,7 +66,7 @@ function BookDetails({ book }) {
         </section>}
         {error && <p className={shared.error} role="alert">{error}</p>}
         <div className={shared.actions}>
-          {canReadDigitalBook(book) && <Link className={shared.primary} to="ler">Ler agora</Link>}
+          <DigitalReadAction book={book} />
           <Link className={shared.secondary} to="editar">Editar livro</Link>
           <button type="button" className={shared.primary} disabled={downloading} onClick={download}>
             {downloading ? 'Buscando arquivo…' : 'Baixar original'}
