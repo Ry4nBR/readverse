@@ -1,0 +1,18 @@
+.dropZone {
+  display: grid;
+  justify-items: center;
+  gap: .75rem;
+  padding: clamp(1.25rem, 4vw, 2.75rem);
+  border: 2px dashed #89998a;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--accent);
+  text-align: center;
+}
+
+.dropZone[data-dragging='true'] { background: var(--accent-light); }
+.dropZone h2, .draft h2 { font: 700 1.5rem var(--serif); overflow-wrap: anywhere; }
+.dropZone p, .draft > p { color: var(--muted); }
+.progress { width: 100%; accent-color: var(--accent); }
+.importErrors { margin: 0; padding-inline-start: 1.25rem; overflow-wrap: anywhere; }
+.draft { display: grid; gap: .625rem; }
