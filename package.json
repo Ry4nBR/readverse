@@ -23,6 +23,11 @@
     "react-pdf": "11.1.0",
     "react-router-dom": "7.18.7"
   },
+  "overrides": {
+    "epubjs": {
+      "@xmldom/xmldom": "0.8.15"
+    }
+  },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@vitejs/plugin-react": "6.3.0",

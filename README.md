@@ -1,17 +1,40 @@
 # BookShelf
 
-Biblioteca pessoal em React, JavaScript e Vite, com uma estante para livros físicos e outra para arquivos PDF, EPUB e MOBI.
+Biblioteca pessoal digital desenvolvida em React, JavaScript e Vite, com estante para livros físicos, biblioteca para arquivos digitais (PDF, EPUB e MOBI), estantes personalizadas, acompanhamento de leitura e leitores integrados.
 
-## Executar localmente
+## Objetivo
 
-Use Node.js 24 LTS e npm. Na raiz do repositório, execute:
+Centralizar o controle de acervo pessoal (físico e digital) em uma aplicação web local-first, permitindo cadastrar livros por ISBN ou manualmente, importar e-books com persistência offline no navegador, acompanhar metas e histórico de leitura e ler arquivos EPUB e PDF diretamente na interface.
+
+## Funcionalidades implementadas
+
+- **Visão geral (Dashboard):** totais reais de livros físicos, digitais, lidos, em andamento e quero ler; meta anual; listas de leitura e gráficos por mês, gênero e formato.
+- **Livros físicos:** consulta automática por ISBN-10 e ISBN-13, cadastro manual, upload de capa, edição, exclusão, busca e filtros por gênero e status.
+- **Estante digital:** importação múltipla de PDF, EPUB e MOBI (até 100 MB), validação estrutural, detecção de duplicidade por SHA-256, extração de metadados, edição, download do original e exclusão.
+- **Personalização:** criação, edição, exclusão e ordenação de estantes personalizadas; vínculo de livros físicos e digitais; alternância entre grade de capas e prateleiras visuais; temas claro, escuro e sépia; cor de destaque e densidade.
+- **Acompanhamento de leitura:** status (*Quero ler*, *Lendo*, *Lido*), datas de início e conclusão, avaliação (1 a 5), observações, progresso percentual, meta anual e histórico.
+- **Leitores digitais:** leitor EPUB (`epubjs`) com sumário, capítulos, marcadores, ajustes de fonte/entrelinha/margens/tema e tela cheia; leitor PDF (`react-pdf` / `pdfjs-dist`) com paginação, zoom, tela cheia e retomada de página.
+
+## Tecnologias, bibliotecas e APIs
+
+- **Base:** React `19.3.1`, React DOM `19.3.1`, Vite `8.3.8`, JavaScript (ES Modules), CSS Modules.
+- **Roteamento:** `react-router-dom` `7.18.7`.
+- **Ícones:** `lucide-react` `1.80.0`.
+- **Leitores e arquivos:** `epubjs` `0.3.93`, `react-pdf` `11.1.0`, `pdfjs-dist` `6.5.438`, `@zip.js/zip.js` `2.25.0`.
+- **Qualidade e testes:** ESLint `10.15.0`, `node --test`, `fake-indexeddb` `6.2.8`.
+- **APIs externas:** [Google Books API](https://developers.google.com/books/docs/v1/using) e [Open Library API](https://openlibrary.org/developers/api) (para pesquisa por ISBN).
+- **Armazenamento no navegador:** IndexedDB (`bookshelf`, `bookshelf-digital`, `bookshelf-organization`) e `localStorage` (preferências de aparência, modo de exibição, configurações do leitor e meta anual).
+
+## Requisitos e execução localmente
+
+Use Node.js (`^22.13.0` ou `>=24.0.0`, conforme `package.json`) e npm. Na raiz do repositório, execute:
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Abra o endereço exibido pelo Vite no terminal (normalmente `http://localhost:5173`). No PowerShell, use `npm.cmd` se a política do sistema bloquear o script `npm.ps1`.
+Abra o endereço exibido pelo Vite no terminal (normalmente `http://localhost:5173`). No PowerShell, use `npm.cmd` se a política do sistema bloquear o script `npm.ps1`. Para configurar uma chave opcional da Google Books API, copie `.env.example` para `.env.local`.
 
 ## Estante de livros físicos
 
@@ -93,3 +116,70 @@ O build é gerado em `dist/`. Em uma hospedagem estática, configure o redirecio
 - `src/hooks/` carrega os livros para as telas.
 - `src/utils/` reúne a validação de ISBN e os dados do formulário.
 - `tests/` cobre a validação de ISBN, os catálogos, a validação de arquivos digitais, a persistência no IndexedDB, as preferências de aparência e as regras e estatísticas de leitura.
+
+## Conceitos React aplicados
+
+### React State e `useState`
+O estado local controla filtros, formulários, carregamento, erros e preferências de leitura. Em `src/pages/PhysicalShelfPage.jsx`, os filtros de busca são mantidos com `useState`:
+
+```jsx
+const [query, setQuery] = useState('')
+const [genre, setGenre] = useState('')
+const [status, setStatus] = useState('')
+```
+
+### `useEffect`
+O hook `useEffect` sincroniza efeitos colaterais com o ciclo de vida dos componentes, como carregamento assíncrono do IndexedDB, listeners de tela cheia e inicialização do leitor EPUB, sempre com função de limpeza. Em `src/pages/DigitalReaderPage.jsx`:
+
+```jsx
+useEffect(() => {
+  let active = true
+  openReaderFile(id).then((data) => { if (active) setResult(data) }, (error) => {
+    if (active) setResult({ error: error.message })
+  })
+  return () => { active = false }
+}, [id])
+```
+
+### Formulários
+Os formulários utilizam componentes controlados, validação antes do envio e bloqueio durante operações assíncronas. Em `src/components/PhysicalBookForm.jsx`, `update` atualiza o estado de cada campo e `submit` valida com `validateBookForm(book)` antes de chamar `onSave(normalized)`:
+
+```jsx
+const message = validateBookForm(book)
+if (message) {
+  setError(message)
+  return
+}
+```
+
+### Consumo de APIs
+As consultas externas usam `fetch` com `AbortSignal` para cancelamento e tempo limite, tratando respostas inválidas e indisponibilidade. Em `src/services/bookLookup.js`, `lookupBook` consulta a Google Books API e recorre à Open Library API quando necessário:
+
+```js
+const response = await fetch(url, { signal: signal ? AbortSignal.any([signal, timeout]) : timeout })
+if (!response.ok) throw new Error('O catálogo respondeu com HTTP ' + response.status)
+```
+
+### React Router DOM
+A aplicação envolve `AppRoutes` em `BrowserRouter` (`src/main.jsx`) e define rotas aninhadas com `Routes` e `Route` em `src/routes/AppRoutes.jsx`, usando rotas dinâmicas (`biblioteca/:bookId`, `biblioteca-digital/:bookId/ler`), `NavLink` na barra lateral (`src/components/Sidebar.jsx`) e hooks como `useParams` e `useNavigate` nas páginas:
+
+```jsx
+<Routes>
+  <Route path="biblioteca-digital/:bookId/ler" element={<DigitalReaderPage />} />
+  <Route element={<LibraryLayout />}>
+    <Route index element={<DashboardPage />} />
+    <Route path="biblioteca" element={<PhysicalShelfPage />} />
+    <Route path="biblioteca/:bookId" element={<PhysicalBookDetailsPage />} />
+  </Route>
+</Routes>
+```
+
+## Limitações conhecidas
+
+- **Leitura direta de MOBI:** o navegador valida e extrai metadados do MOBI, mas não converte nem renderiza o formato diretamente; é necessário converter para EPUB externamente (ex.: Calibre) e vincular o arquivo convertido no cadastro.
+- **Armazenamento local:** os dados e arquivos ficam no IndexedDB e `localStorage` do navegador/origem atual; limpar dados do site ou usar navegação privada remove a biblioteca local.
+- **Versão do Node.js:** o build (`vite 8`), o linter (`eslint 10`) e as suítes de teste que usam `File`, `crypto.subtle`, `structuredClone` e `AbortSignal.any` exigem Node.js `^22.13.0` ou `>=24.0.0`.
+
+## Autoria
+
+Desenvolvido por **Ry4nBR** (`amorim2002ryan@gmail.com`) como projeto acadêmico em React.

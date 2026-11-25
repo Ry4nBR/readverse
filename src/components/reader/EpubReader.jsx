@@ -90,9 +90,9 @@ export default function EpubReader({ file, book, onPosition }) {
     const current = rendition.current
     if (current) {
       current.getContents().forEach((contents) => applyEpubStyles(contents, next))
-      if (next.margin !== preferences.margin) {
+      if (next.margin !== preferences.margin && current.manager) {
         current.manager.settings.gap = next.margin * 2
-        current.manager.updateLayout()
+        current.manager.updateLayout?.()
       }
       if (location?.cfi) void current.display(location.cfi).catch(() => setNavigationError(true))
     }
