@@ -3,7 +3,7 @@ import test from 'node:test'
 import { indexedDB, IDBObjectStore } from 'fake-indexeddb'
 import {
   deleteDigitalBook, DuplicateDigitalBookError, getDigitalBook, getDigitalFile,
-  hasDigitalFile, listDigitalBooks, saveDigitalBook, updateDigitalBook,
+  hasDigitalFile, listDigitalBooks, saveDigitalBook, updateDigitalBook, getMobiEpub, saveMobiEpub,
 } from '../src/services/digitalBooks.js'
 
 globalThis.indexedDB = indexedDB
@@ -52,4 +52,17 @@ test('falha de cota cancela a gravação do livro e permite nova tentativa', asy
   const retry = await saveDigitalBook(draft, metadata)
   assert.equal(await (await getDigitalFile(retry.id)).text(), 'dados')
   await deleteDigitalBook(retry.id)
+})
+
+test('a versão de leitura do MOBI tem armazenamento independente do original', async () => {
+  const file = new globalThis.File(['bytes do MOBI'], 'livro.mobi')
+  const converted = new globalThis.File(['bytes do EPUB'], 'livro.epub')
+  const { id } = await saveDigitalBook({ file, hash: 'mobi-conversao', format: 'mobi' }, metadata)
+  assert.equal((await saveMobiEpub(id, converted)).mobiEpub, true)
+  assert.equal(await (await getDigitalFile(id)).text(), 'bytes do MOBI')
+  assert.equal(await (await getMobiEpub(id)).text(), 'bytes do EPUB')
+  await assert.rejects(saveMobiEpub(id, converted), /já tem/)
+  await deleteDigitalBook(id)
+  assert.equal(await getMobiEpub(id), undefined)
+  assert.equal(await getDigitalFile(id), undefined)
 })

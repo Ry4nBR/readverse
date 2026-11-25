@@ -5,6 +5,7 @@ import { publishBookChange } from './bookChanges.js'
 const databaseName = 'bookshelf-digital'
 const bookStore = 'books'
 const fileStore = 'files'
+const mobiEpubKey = (id) => id + ':epub'
 
 export class DigitalStorageError extends Error {}
 export class DuplicateDigitalBookError extends DigitalStorageError {
@@ -71,6 +72,7 @@ function read(store, requestFor) {
 
 export const listDigitalBooks = () => read(bookStore, (store) => store.getAll())
 export const getDigitalBook = (id) => read(bookStore, (store) => store.get(id))
+export const getMobiEpub = (id) => read(fileStore, (store) => store.get(mobiEpubKey(id)))
 export const getDigitalFile = (id) => read(fileStore, (store) => store.get(id))
 export const hasDigitalFile = async (hash) => !!await read(bookStore, (store) => store.index('hash').getKey(hash))
 
@@ -159,9 +161,26 @@ export function toggleEpubBookmark(id, cfi, label) {
   })
 }
 
+export function saveMobiEpub(id, file) {
+  return transact([bookStore, fileStore], 'readwrite', (transaction, done, fail) => {
+    const books = transaction.objectStore(bookStore)
+    const request = books.get(id)
+    request.onsuccess = () => {
+      const book = request.result
+      if (book?.format !== 'mobi') return fail(new DigitalStorageError('Livro MOBI não encontrado.'))
+      if (book.mobiEpub) return fail(new DigitalStorageError('Este livro já tem uma versão EPUB vinculada.'))
+      const updated = { ...book, mobiEpub: true }
+      books.put(updated)
+      transaction.objectStore(fileStore).put(file, mobiEpubKey(id))
+      done(updated)
+    }
+  }).then(publishBookChange)
+}
+
 export function deleteDigitalBook(id) {
   return transact([bookStore, fileStore], 'readwrite', (transaction) => {
     transaction.objectStore(bookStore).delete(id)
     transaction.objectStore(fileStore).delete(id)
+    transaction.objectStore(fileStore).delete(mobiEpubKey(id))
   }).then(publishBookChange)
 }
