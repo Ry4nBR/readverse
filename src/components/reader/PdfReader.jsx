@@ -6,10 +6,13 @@ import ReaderNavigation from './ReaderNavigation.jsx'
 import styles from './Reader.module.css'
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker
+const zoomLevels = [.75, 1, 1.25, 1.5, 2]
 const pdfOptions = { isEvalSupported: false }
 
 export default function PdfReader({ file, book, onPosition }) {
   const viewport = useRef(null)
+  const [zoomIndex, setZoomIndex] = useState(1)
+  const zoom = zoomLevels[zoomIndex]
   const [width, setWidth] = useState(0)
   const [document, setDocument] = useState(null)
   const [error, setError] = useState('')
@@ -31,10 +34,20 @@ export default function PdfReader({ file, book, onPosition }) {
     viewport.current.scrollTo({ top: 0, left: 0 })
   }
 
+  function changeZoom(step) {
+    setError('')
+    setZoomIndex((current) => current + step)
+  }
+
   return <>
     {document && <ReaderNavigation label={'Página ' + page + ' de ' + pages}
       previous={() => navigate(page - 1)} next={() => navigate(page + 1)}
       disablePrevious={page <= 1} disableNext={page >= pages} />}
+    {document && <div className={styles.controls} aria-label="Zoom do PDF">
+      <button type="button" disabled={zoomIndex === 0} onClick={() => changeZoom(-1)}>Diminuir zoom</button>
+      <output aria-label="Zoom atual">{zoom * 100}%</output>
+      <button type="button" disabled={zoomIndex === zoomLevels.length - 1} onClick={() => changeZoom(1)}>Aumentar zoom</button>
+    </div>}
     {error && <p role="alert" className={styles.error}>{error}</p>}
     <div className={styles.pdf} ref={viewport} aria-label="Conteúdo do PDF">
       <Document file={file} options={pdfOptions} loading={<p role="status">Carregando PDF…</p>}
@@ -48,7 +61,7 @@ export default function PdfReader({ file, book, onPosition }) {
           setDocument({ pages: numPages, page: Math.max(1, Math.min(numPages, saved || 1)) })
           setRendering(true)
         }}>
-        {document && width > 0 && <Page pageNumber={page} width={width}
+        {document && width > 0 && <Page pageNumber={page} width={width} scale={zoom}
           renderAnnotationLayer={false} loading={<p role="status">Renderizando página…</p>}
           onLoadError={() => { setRendering(false); setError('Não foi possível carregar esta página do PDF.') }}
           onRenderError={() => { setRendering(false); setError('Não foi possível renderizar esta página do PDF.') }}
