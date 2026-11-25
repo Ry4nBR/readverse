@@ -3,7 +3,7 @@ import DeleteBookDialog from '../components/DeleteBookDialog.jsx'
 import ShelfForm from '../components/ShelfForm.jsx'
 import shared from '../components/PhysicalBook.module.css'
 import styles from './CustomShelvesPage.module.css'
-import { createShelf, deleteShelf, listShelves, ShelfError, updateShelf } from '../services/customShelves.js'
+import { createShelf, deleteShelf, listShelves, reorderShelf, ShelfError, updateShelf } from '../services/customShelves.js'
 
 export default function CustomShelvesPage() {
   const [shelves, setShelves] = useState(null)
@@ -70,11 +70,17 @@ export default function CustomShelvesPage() {
         }}>Tentar novamente</button></div>
       ) : <p role="status">Carregando estantes…</p>) : shelves.length ? (
         <ul className={styles.shelves}>
-          {shelves.map((shelf) => (
+          {shelves.map((shelf, index) => (
             <li key={shelf.id} className={shared.panel} style={{ '--shelf-color': shelf.color }}>
               <div className={styles.heading}>
                 <div><h2>{shelf.name}</h2>{shelf.description && <p>{shelf.description}</p>}</div>
                 <div className={shared.actions}>
+                  <button type="button" className={shared.secondary} disabled={busy || index === 0}
+                    aria-label={'Subir estante ' + shelf.name}
+                    onClick={() => void change(() => reorderShelf(shelf.id, -1), 'Ordem atualizada.')}>Subir</button>
+                  <button type="button" className={shared.secondary} disabled={busy || index === shelves.length - 1}
+                    aria-label={'Descer estante ' + shelf.name}
+                    onClick={() => void change(() => reorderShelf(shelf.id, 1), 'Ordem atualizada.')}>Descer</button>
                   <button type="button" className={shared.secondary} disabled={busy}
                     onClick={() => { setError(''); setEditing(shelf) }}>Editar estante</button>
                   <DeleteBookDialog title={shelf.name} action="Excluir estante" question="Excluir estante?" disabled={busy}

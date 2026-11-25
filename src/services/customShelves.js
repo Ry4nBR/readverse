@@ -63,4 +63,15 @@ export const updateShelf = (id, data) => accessShelves((shelves) => {
   return shelves.map((shelf) => shelf.id === id ? { ...shelf, ...fields(data) } : shelf)
 })
 
+export const reorderShelf = (id, direction) => accessShelves((shelves) => {
+  const index = shelves.findIndex((shelf) => shelf.id === id)
+  if (index < 0) throw new ShelfError('Esta estante já foi excluída.')
+  if (direction !== -1 && direction !== 1) throw new ShelfError('Posição inválida.')
+  const target = index + direction
+  if (target < 0 || target >= shelves.length) return shelves
+  const ordered = [...shelves]
+  ;[ordered[index], ordered[target]] = [ordered[target], ordered[index]]
+  return ordered
+})
+
 export const deleteShelf = (id) => accessShelves((shelves) => shelves.filter((shelf) => shelf.id !== id))
