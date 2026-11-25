@@ -1,9 +1,13 @@
 import { createElement } from 'react'
 import { BookOpen, LayoutDashboard } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
+import { sections } from '../routes/sections.js'
 import styles from './Sidebar.module.css'
 
-const navigation = [{ to: '/', label: 'Visão geral', icon: LayoutDashboard }]
+const navigation = [
+  { to: '/', label: 'Visão geral', icon: LayoutDashboard },
+  ...sections,
+]
 
 export default function Sidebar() {
   return (
