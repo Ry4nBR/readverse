@@ -3,12 +3,20 @@ import { Link, useLocation } from 'react-router-dom'
 import PhysicalBookCard from '../components/PhysicalBookCard.jsx'
 import styles from '../components/PhysicalBook.module.css'
 import { listPhysicalBooks } from '../services/physicalBooks.js'
+import { readingStatuses } from '../utils/bookForm.js'
+
+function searchKey(value) {
+  return value.trim().toLocaleLowerCase('pt-BR').normalize('NFD').replace(/\p{M}/gu, '')
+}
 
 export default function PhysicalShelfPage() {
   const { state } = useLocation()
   const [books, setBooks] = useState(null)
   const [loadError, setLoadError] = useState(false)
   const [attempt, setAttempt] = useState(0)
+  const [query, setQuery] = useState('')
+  const [genre, setGenre] = useState('')
+  const [status, setStatus] = useState('')
 
   useEffect(() => {
     let active = true
@@ -19,6 +27,16 @@ export default function PhysicalShelfPage() {
     })
     return () => { active = false }
   }, [attempt])
+
+  const genres = new Map()
+  for (const book of books ?? []) {
+    if (book.genre) genres.set(searchKey(book.genre), book.genre)
+  }
+  const term = searchKey(query)
+  const visible = books?.filter((book) =>
+    (searchKey(book.title).includes(term) || searchKey(book.author).includes(term)) &&
+    (!genre || searchKey(book.genre) === genre) && (!status || book.status === status),
+  )
 
   return (
     <section className={styles.page}>
@@ -41,9 +59,39 @@ export default function PhysicalShelfPage() {
       ) : !books ? <p role="status">Carregando estante…</p> : books.length === 0 ? (
         <p className={styles.panel}>Sua estante está vazia. Cadastre um livro para começar.</p>
       ) : (
-        <ul className={styles.shelf}>
-          {books.map((book) => <li key={book.id}><PhysicalBookCard book={book} /></li>)}
-        </ul>
+        <>
+          <div className={styles.panel}>
+            <div className={styles.fields}>
+              <label>
+                Buscar por título ou autor
+                <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} />
+              </label>
+              <label>
+                Filtrar por gênero
+                <select value={genre} onChange={(event) => setGenre(event.target.value)}>
+                  <option value="">Todos os gêneros</option>
+                  {[...genres].sort(([, a], [, b]) => a.localeCompare(b, 'pt-BR')).map(([key, label]) =>
+                    <option value={key} key={key}>{label}</option>,
+                  )}
+                </select>
+              </label>
+              <label>
+                Filtrar por status
+                <select value={status} onChange={(event) => setStatus(event.target.value)}>
+                  <option value="">Todos os status</option>
+                  {Object.entries(readingStatuses).map(([key, label]) =>
+                    <option value={key} key={key}>{label}</option>,
+                  )}
+                </select>
+              </label>
+            </div>
+          </div>
+          {visible.length ? (
+            <ul className={styles.shelf}>
+              {visible.map((book) => <li key={book.id}><PhysicalBookCard book={book} /></li>)}
+            </ul>
+          ) : <p role="status" className={styles.panel}>Nenhum livro corresponde à busca e aos filtros.</p>}
+        </>
       )}
     </section>
   )
