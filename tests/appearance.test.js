@@ -17,5 +17,8 @@ test('preferências antigas e inválidas recebem valores padrão', () => {
   const fallback = normalizeAppearance({ theme: 'outro', accent: 'red' })
   assert.equal(fallback.theme, 'light')
   assert.equal(fallback.accent, null)
+  assert.equal(fallback.density, 'comfortable')
+  assert.equal(fallback.showAuthors, true)
+  assert.equal(normalizeAppearance({ showAuthors: false, density: 'compact', mode: 'grid' }).showAuthors, false)
   assert.equal(normalizeAppearance({ theme: 'dark' }).accent, null)
 })

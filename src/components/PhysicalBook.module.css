@@ -52,6 +52,15 @@
 
 .page textarea { resize: vertical; }
 
+.page .checkbox {
+  display: flex;
+  align-items: center;
+  align-self: end;
+  min-height: 2.5rem;
+}
+
+.page .checkbox input { width: auto; accent-color: var(--accent); }
+
 .coverField, .actions {
   display: flex;
   flex-wrap: wrap;

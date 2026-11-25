@@ -32,6 +32,17 @@ export default function AppearancePage() {
             <input type="color" value={preferences.accent ?? { light: '#365341', dark: '#a5d5ac', sepia: '#784631' }[preferences.theme]}
               onChange={(event) => apply({ accent: event.target.value })} />
           </label>
+          <label>Densidade das capas
+            <select value={preferences.density} onChange={(event) => apply({ density: event.target.value })}>
+              <option value="comfortable">Confortável</option>
+              <option value="compact">Compacta</option>
+            </select>
+          </label>
+          <label className={shared.checkbox}>
+            <input type="checkbox" checked={preferences.showAuthors}
+              onChange={(event) => apply({ showAuthors: event.target.checked })} />
+            Mostrar autores nas estantes
+          </label>
         </div>
         {preferences.accent && <div>
           <button type="button" className={shared.secondary} onClick={() => apply({ accent: null })}>
