@@ -1,19 +1,41 @@
 import { createElement } from 'react'
-import { BookOpen, CheckCircle2, LibraryBig } from 'lucide-react'
+import { BookMarked, BookOpen, CheckCircle2, LibraryBig, Tablet } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { usePhysicalBooks } from '../hooks/usePhysicalBooks.js'
+import DashboardBookList from '../components/DashboardBookList.jsx'
+import shared from '../components/PhysicalBook.module.css'
+import { useReadingCatalog } from '../hooks/useReadingCatalog.js'
+import { readingStats } from '../utils/readingStats.js'
 import styles from './DashboardPage.module.css'
 
 const summary = [
-  { label: 'Livros físicos', icon: LibraryBig, key: 'all' },
-  { label: 'Em leitura', icon: BookOpen, key: 'reading' },
-  { label: 'Concluídos', icon: CheckCircle2, key: 'finished' },
+  { label: 'Livros físicos', icon: LibraryBig, key: 'physical' },
+  { label: 'Livros digitais', icon: Tablet, key: 'digital' },
+  { label: 'Livros lidos', icon: CheckCircle2, key: 'finished' },
+  { label: 'Em andamento', icon: BookOpen, key: 'reading' },
+  { label: 'Quero ler', icon: BookMarked, key: 'toRead' },
 ]
 
+function DashboardStats({ books }) {
+  const { counts, reading, toRead, recent } = readingStats(books)
+  return <>
+    <dl className={styles.summary} aria-label="Resumo da biblioteca">
+      {summary.map(({ label, icon, key }) => (
+        <div key={key} className={styles.card}>
+          <dt>{createElement(icon, { size: 18, 'aria-hidden': true })} {label}</dt>
+          <dd>{counts[key]}</dd>
+        </div>
+      ))}
+    </dl>
+    <div className={styles.lists}>
+      <DashboardBookList title="Livros em andamento" books={reading} empty="Nenhum livro marcado como “Lendo”." showProgress />
+      <DashboardBookList title="Livros que quero ler" books={toRead} empty="Nenhum livro na lista de próximas leituras." />
+      <DashboardBookList title="Últimos livros adicionados" books={recent.slice(0, 6)} empty="Sua biblioteca está vazia." />
+    </div>
+  </>
+}
+
 export default function DashboardPage() {
-  const { books, loadError } = usePhysicalBooks()
-  const reading = books?.filter(({ status }) => status === 'reading')
-  const counts = { all: books?.length, reading: reading?.length, finished: books?.filter(({ status }) => status === 'finished').length }
+  const { books, error, retry } = useReadingCatalog()
   return (
     <div className={styles.dashboard}>
       <header className={styles.intro}>
@@ -30,25 +52,10 @@ export default function DashboardPage() {
           Estante digital
         </Link>
       </nav>
-      {loadError ? <p role="alert">Não foi possível carregar o resumo da estante.</p> : !books ? (
-        <p role="status">Carregando resumo da estante…</p>
-      ) : <>
-      <dl className={styles.summary} aria-label="Resumo da estante física">
-        {summary.map(({ label, icon, key }) => (
-          <div key={label} className={styles.card}>
-            <dt>{createElement(icon, { size: 18, 'aria-hidden': true })} {label}</dt>
-            <dd>{counts[key]}</dd>
-          </div>
-        ))}
-      </dl>
-      <section className={styles.empty} aria-labelledby="em-leitura">
-        <BookOpen size={30} aria-hidden="true" />
-        <h2 id="em-leitura">Livros em leitura</h2>
-        {reading.length ? <ul className={styles.readingList}>
-          {reading.map((book) => <li key={book.id}><Link to={'/biblioteca/' + book.id}>{book.title}</Link></li>)}
-        </ul> : <p>Nenhum livro marcado como “Lendo”.</p>}
-      </section>
-      </>}
+      {error ? <section className={styles.listPanel}>
+        <p role="alert">Não foi possível carregar o resumo da biblioteca.</p>
+        <div><button className={shared.secondary} type="button" onClick={retry}>Tentar novamente</button></div>
+      </section> : !books ? <p role="status">Carregando resumo da biblioteca…</p> : <DashboardStats books={books} />}
     </div>
   )
 }

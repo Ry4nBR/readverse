@@ -14,12 +14,12 @@
 
 .summary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
   gap: 1rem;
   margin: 0;
 }
 
-.card, .empty {
+.card, .listPanel {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
@@ -38,17 +38,15 @@
   font: 700 2rem var(--serif);
 }
 
-.empty {
-  display: grid;
-  justify-items: center;
-  gap: .5rem;
-  padding: 2.5rem 1rem;
-  color: var(--accent);
-  text-align: center;
-}
+.listPanel { display: grid; align-content: start; gap: .75rem; min-width: 0; }
+.listPanel h2 { font: 700 1.5rem var(--serif); }
+.listPanel p { color: var(--muted); }
 
-.empty h2 { font: 700 1.5rem var(--serif); }
-.empty p { color: var(--muted); }
+.lists {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: 1rem;
+}
 
 .libraries {
   display: grid;
@@ -70,7 +68,9 @@
 
 .library:hover { background: var(--accent-light); }
 
-.readingList { margin: 0; padding: 0; list-style: none; overflow-wrap: anywhere; }
+.readingList { display: grid; gap: .625rem; margin: 0; padding: 0; list-style: none; overflow-wrap: anywhere; }
+.readingList li { display: grid; gap: .125rem; padding-block-start: .5rem; border-top: 1px solid var(--border); }
+.readingList span { color: var(--muted); font-size: .875rem; }
 
 @media (max-width: 32rem) {
   .summary { grid-template-columns: 1fr; }
