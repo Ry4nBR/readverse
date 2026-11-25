@@ -42,6 +42,7 @@ export default function EpubReader({ file, book, onPosition }) {
         publication.spine.hooks.content.register(limitContent)
         renderer = publication.renderTo(viewport.current, {
           width: '100%', height: '100%', flow: 'paginated', spread: 'none', allowScriptedContent: false,
+          gap: currentPreferences.current.margin * 2,
         })
         rendition.current = renderer
         renderer.hooks.content.register((contents) => applyEpubStyles(contents, currentPreferences.current))
@@ -90,6 +91,10 @@ export default function EpubReader({ file, book, onPosition }) {
     const current = rendition.current
     if (current) {
       current.getContents().forEach((contents) => applyEpubStyles(contents, next))
+      if (next.margin !== preferences.margin) {
+        current.manager.settings.gap = next.margin * 2
+        current.manager.updateLayout()
+      }
       if (location?.cfi) void current.display(location.cfi).catch(() => setNavigationError(true))
     }
   }

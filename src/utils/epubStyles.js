@@ -28,6 +28,5 @@ export function applyEpubStyles(contents, preferences) {
       font-family: ${font} !important; line-height: ${preferences.lineHeight} !important;
     }
     body p, body li, body blockquote, body dt, body dd { font-size: ${preferences.size}px !important; }
-    html body { padding-inline: min(${preferences.margin}px, 12vw) !important; }
   `
 }
