@@ -50,6 +50,26 @@
 .empty h2 { font: 700 1.5rem var(--serif); }
 .empty p { color: var(--muted); }
 
+.libraries {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+  gap: 1rem;
+}
+
+.library {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.library:hover { background: var(--accent-light); }
+
 .readingList { margin: 0; padding: 0; list-style: none; overflow-wrap: anywhere; }
 
 @media (max-width: 32rem) {

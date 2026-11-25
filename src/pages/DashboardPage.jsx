@@ -5,7 +5,7 @@ import { usePhysicalBooks } from '../hooks/usePhysicalBooks.js'
 import styles from './DashboardPage.module.css'
 
 const summary = [
-  { label: 'Na biblioteca', icon: LibraryBig, key: 'all' },
+  { label: 'Livros físicos', icon: LibraryBig, key: 'all' },
   { label: 'Em leitura', icon: BookOpen, key: 'reading' },
   { label: 'Concluídos', icon: CheckCircle2, key: 'finished' },
 ]
@@ -20,10 +20,20 @@ export default function DashboardPage() {
         <h1>Visão geral</h1>
         <p>Organize seus livros e acompanhe suas leituras.</p>
       </header>
+      <nav className={styles.libraries} aria-label="Estantes">
+        <Link to="/biblioteca" className={styles.library}>
+          <LibraryBig size={22} aria-hidden="true" />
+          Estante física
+        </Link>
+        <Link to="/biblioteca-digital" className={styles.library}>
+          <BookOpen size={22} aria-hidden="true" />
+          Estante digital
+        </Link>
+      </nav>
       {loadError ? <p role="alert">Não foi possível carregar o resumo da estante.</p> : !books ? (
         <p role="status">Carregando resumo da estante…</p>
       ) : <>
-      <dl className={styles.summary} aria-label="Resumo da biblioteca">
+      <dl className={styles.summary} aria-label="Resumo da estante física">
         {summary.map(({ label, icon, key }) => (
           <div key={label} className={styles.card}>
             <dt>{createElement(icon, { size: 18, 'aria-hidden': true })} {label}</dt>
