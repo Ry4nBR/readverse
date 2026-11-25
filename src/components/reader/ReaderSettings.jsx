@@ -1,4 +1,4 @@
-import { fonts, fontSizes, lineHeights, margins } from '../../services/readerPreferences.js'
+import { fonts, fontSizes, lineHeights, margins, readerThemes } from '../../services/readerPreferences.js'
 import styles from './Reader.module.css'
 
 export default function ReaderSettings({ preferences, onChange, error }) {
@@ -25,6 +25,11 @@ export default function ReaderSettings({ preferences, onChange, error }) {
       <label>Espaçamento entre linhas
         <select value={preferences.lineHeight} onChange={(event) => onChange({ lineHeight: Number(event.target.value) })}>
           {lineHeights.map((value) => <option key={value} value={value}>{String(value).replace('.', ',')}</option>)}
+        </select>
+      </label>
+      <label>Tema de leitura
+        <select value={preferences.theme} onChange={(event) => onChange({ theme: event.target.value })}>
+          {Object.entries(readerThemes).map(([value, text]) => <option key={value} value={value}>{text}</option>)}
         </select>
       </label>
       <label>Margens de leitura

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import ePub from 'epubjs'
 import { epubLocation, flattenToc } from '../../utils/epubNavigation.js'
 import { getReaderPreferences, saveReaderPreferences } from '../../services/readerPreferences.js'
-import { applyEpubStyles } from '../../utils/epubStyles.js'
+import { applyEpubStyles, epubPalette } from '../../utils/epubStyles.js'
 import ReaderSettings from './ReaderSettings.jsx'
 import ReaderNavigation from './ReaderNavigation.jsx'
 import styles from './Reader.module.css'
@@ -121,7 +121,7 @@ export default function EpubReader({ file, book, onPosition }) {
           onClick={() => navigate('display', location.nextChapter)}>Próximo capítulo</button>
       </div>
     </div>}
-    <div className={styles.epub} aria-label="Conteúdo do EPUB" ref={viewport} />
+    <div className={styles.epub} style={{ background: epubPalette[preferences.theme].background }} aria-label="Conteúdo do EPUB" ref={viewport} />
     {state === 'ready' && <ReaderNavigation label={location ? 'Página ' + location.page + ' de ' + location.pages + ' no capítulo' : 'Calculando página…'}
       previous={() => navigate('prev')} next={() => navigate('next')}
       disablePrevious={!location || location.first} disableNext={!location || location.last} />}
