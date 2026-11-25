@@ -47,6 +47,7 @@ export default function PhysicalBookForm({ initialBook = emptyBook, onSave, allo
     const normalized = Object.fromEntries(Object.entries(book).map(([name, value]) =>
       [name, typeof value === 'string' ? value.trim() : value],
     ))
+    if (initialBook.id && normalized.status === initialBook.status) delete normalized.status
     try {
       await onSave(normalized)
     } catch (failure) {

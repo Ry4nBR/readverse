@@ -20,7 +20,7 @@ test('grava a leitura nos dois catálogos e mantém arquivos e metadados de edi�
 
     await updateBookReading('physical', physical.id, { progress: 42, rating: 4 })
     await updateBookReading('digital', digital.id, { progress: 100, notes: 'Concluído' })
-    await updateDigitalBook(digital.id, { ...metadata, title: 'Título atualizado', status: 'finished' })
+    await updateDigitalBook(digital.id, { ...metadata, title: 'Título atualizado', status: undefined })
 
     assert.equal((await getPhysicalBook(physical.id)).reading.progress, 42)
     assert.equal((await getDigitalBook(digital.id)).reading.notes, 'Concluído')

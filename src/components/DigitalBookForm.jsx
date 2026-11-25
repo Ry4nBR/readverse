@@ -39,6 +39,7 @@ export default function DigitalBookForm({ initialBook, onSave, onCancel, cancelL
       return
     }
 
+    if (initialBook.id && metadata.status === initialBook.status) delete metadata.status
     setSaving(true)
     setError('')
     try {
