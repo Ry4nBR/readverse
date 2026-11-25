@@ -32,7 +32,7 @@ Para usar uma chave pública de navegador do Google Books, habilite a API no Goo
 2. Revise os dados extraídos, preencha o título ou o autor quando faltarem e ajuste gênero, descrição, status e capa. A capa aceita JPEG, PNG, WebP ou GIF de até 5 MB. Salve cada livro que deseja manter.
 3. Na **Estante digital**, pesquise por título ou autor e combine filtros de formato, gênero e status. Abra um título para ver detalhes, editar, baixar o arquivo original ou excluir o livro.
 
-A importação verifica a extensão, o tipo informado pelo navegador quando é específico e a estrutura do arquivo. Os arquivos de conteúdo idêntico são identificados por SHA-256, mesmo se forem renomeados. A extração preenche os campos disponíveis e pode ser limitada em arquivos protegidos ou sem metadados. A leitura dentro da aplicação está prevista para uma etapa posterior.
+A importação verifica a extensão, o tipo informado pelo navegador quando é específico e a estrutura do arquivo. Os arquivos de conteúdo idêntico são identificados por SHA-256, mesmo se forem renomeados. A extração preenche os campos disponíveis e pode ser limitada em arquivos protegidos ou sem metadados. Use **Ler agora** para abrir EPUB, PDF ou um EPUB vinculado a um MOBI.
 
 Os livros digitais ficam em um banco IndexedDB separado da estante física. A gravação reúne os dados, a capa e o arquivo original em uma transação. Para recuperar a estante após reiniciar, use o mesmo perfil do navegador e a mesma origem, incluindo a porta. A disponibilidade depende da cota e das políticas do navegador. Limpar dados do site ou encerrar uma sessão privada pode remover os arquivos. Use **Baixar original** se precisar manter uma cópia fora do navegador.
 
@@ -52,7 +52,24 @@ As estantes, sua ordem e os vínculos são gravados no IndexedDB. As preferênci
 - Na **Visão geral**, acompanhe os totais, os livros em andamento, a lista de próximas leituras, as últimas inclusões e os gráficos. A meta do ano corrente pode ser definida e alterada no painel.
 - O **Histórico de leitura** mostra os livros atualmente marcados como lidos, com datas e avaliações quando disponíveis. Livros antigos sem data de conclusão entram no total geral e no histórico. O gráfico mensal e a meta anual usam somente conclusões datadas do ano corrente.
 
-Cada cadastro físico ou digital conta uma vez, mesmo quando aparece em uma estante personalizada. Os dados de leitura são gravados junto ao registro do livro no IndexedDB. A meta fica no armazenamento local do navegador, com uma chave por ano. O progresso dos livros digitais é registrado manualmente nesta etapa. O serviço de leitura aceita atualizações parciais para a futura integração com o leitor.
+Cada cadastro físico ou digital conta uma vez, mesmo quando aparece em uma estante personalizada. Os dados de leitura são gravados junto ao registro do livro no IndexedDB. A meta fica no armazenamento local do navegador, com uma chave por ano. Para livros digitais, os detalhes aceitam ajustes manuais e o leitor também atualiza o acompanhamento.
+
+## Leitura digital
+
+- Abra um livro da estante digital com **Ler agora**. O leitor carrega o arquivo do IndexedDB e retoma a última posição no mesmo navegador e endereço.
+- **EPUB** usa epub.js. Você pode navegar por páginas, capítulos e sumário quando disponível, guardar marcadores favoritos e ajustar tamanho da fonte, família, entrelinha, margens e tema. As preferências do leitor são guardadas no navegador e aplicadas ao conteúdo do livro. Publicações de layout fixo preservam sua composição, e conteúdo externo ou dependente de scripts pode ficar indisponível.
+- **PDF** usa React-PDF e PDF.js. Você pode avançar e voltar, consultar o total de páginas, ajustar o zoom e retomar a última página. PDFs que exigem senha exibem um aviso.
+- Os dois leitores oferecem **Tela cheia**. Abrir uma página válida inicia a leitura. A posição é salva mesmo ao voltar páginas, enquanto o percentual indica o maior avanço registrado. Use **Concluir leitura** e confirme para marcar como lido. Chegar à última página mantém o progresso em até 99% até a confirmação.
+
+### Ler um livro MOBI
+
+O navegador não converte MOBI nesta versão. Baixe o original nos detalhes, converta um arquivo sem DRM fora do navegador com o [Calibre](https://manual.calibre-ebook.com/generated/en/ebook-convert.html) e selecione a versão em **Vincular EPUB convertido** no mesmo cadastro:
+
+```sh
+ebook-convert "livro.mobi" "livro.epub"
+```
+
+A biblioteca valida e armazena o EPUB ao lado do MOBI, preservando o original para download e usando o mesmo registro de leitura. Calibre também pode gerar HTML, mas o EPUB mantém a navegação e os recursos de leitura integrados. Bibliotecas como [Foliate JS](https://github.com/johnfactotum/foliate-js) são outra opção para uma futura leitura direta no navegador.
 
 ## Verificar o projeto
 
