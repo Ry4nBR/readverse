@@ -1,8 +1,11 @@
 .shell {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
   min-height: 100vh;
 }
 
 .content {
+  width: 100%;
   max-width: 72rem;
   margin-inline: auto;
   padding: 3rem;
