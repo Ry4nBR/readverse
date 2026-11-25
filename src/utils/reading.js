@@ -29,6 +29,7 @@ export function validReadingDate(value) {
 export function applyReading(book, changes, today = localDate()) {
   const previous = readingOf(book)
   const merged = { ...previous, ...changes }
+  if (changes.status === undefined && previous.status === 'toRead' && changes.progress > 0) merged.status = 'reading'
   if (!Object.hasOwn(readingStatuses, merged.status)) throw new ReadingError('Escolha um status válido.')
   if (!Number.isInteger(merged.progress) || merged.progress < 0 || merged.progress > 100) {
     throw new ReadingError('Informe um progresso inteiro de 0 a 100%.')

@@ -22,6 +22,16 @@ test('transições mantêm status, progresso e datas consistentes', () => {
   assert.equal(applyReading(reopened, { status: 'toRead' }, today).reading.startDate, '')
 })
 
+test('um progresso isolado inicia a leitura ou conclui ao chegar a 100%', () => {
+  const started = applyReading({ status: 'toRead' }, { progress: 34 }, today)
+  assert.equal(started.status, 'reading')
+  assert.equal(started.reading.progress, 34)
+  assert.equal(started.reading.startDate, today)
+  const finished = applyReading({ status: 'toRead' }, { progress: 100 }, today)
+  assert.equal(finished.status, 'finished')
+  assert.equal(finished.reading.completedDate, today)
+})
+
 test('rejeita cronologia inválida, datas futuras, progresso e avaliação fora dos limites', () => {
   const update = (changes) => applyReading({ status: 'finished' }, changes, today)
   assert.throws(() => update({ startDate: '2026-11-20', completedDate: '2026-11-19' }), /depois/)
