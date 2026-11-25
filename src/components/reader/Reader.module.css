@@ -1,0 +1,26 @@
+.shell {
+  width: min(100%, 78rem);
+  min-height: 100dvh;
+  margin-inline: auto;
+  padding: clamp(.75rem, 2vw, 1.5rem);
+  display: grid;
+  align-content: start;
+  gap: .75rem;
+  background: var(--canvas);
+  color: var(--text);
+}
+
+.header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
+.header h1 { font: 700 clamp(1.25rem, 3vw, 1.75rem) var(--serif); overflow-wrap: anywhere; min-width: 0; }
+
+.epub {
+  height: max(20rem, 72dvh);
+  min-width: 0;
+  overflow: hidden;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+}
+
+.epub iframe { display: block; max-width: 100%; }
+.error { color: var(--danger); }

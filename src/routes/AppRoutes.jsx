@@ -4,6 +4,7 @@ import LibraryLayout from '../layouts/LibraryLayout.jsx'
 import CustomShelvesPage from '../pages/CustomShelvesPage.jsx'
 import DashboardPage from '../pages/DashboardPage.jsx'
 
+import DigitalReaderPage from '../pages/DigitalReaderPage.jsx'
 import DigitalBookDetailsPage from '../pages/DigitalBookDetailsPage.jsx'
 import DigitalShelfPage from '../pages/DigitalShelfPage.jsx'
 import DigitalImportPage from '../pages/DigitalImportPage.jsx'
@@ -22,6 +23,7 @@ const futureSections = sections.filter(({ to }) => !['/cadastro', '/biblioteca',
 export default function AppRoutes() {
   return (
     <Routes>
+      <Route path="biblioteca-digital/:bookId/ler" element={<DigitalReaderPage />} />
       <Route element={<LibraryLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="biblioteca" element={<PhysicalShelfPage />} />
