@@ -88,18 +88,15 @@ export async function lookupBook(value, { signal } = {}) {
   const isbn = normalizeIsbn(value)
   if (!isbnKey(isbn)) throw new Error('Informe um ISBN-10 ou ISBN-13 válido.')
 
-  let googleUnavailable = false
   try {
     const book = await googleBook(isbn, signal)
     if (book) return book
   } catch {
     signal?.throwIfAborted()
-    googleUnavailable = true
   }
 
   try {
-    const book = await openLibraryBook(isbn, signal)
-    if (book || !googleUnavailable) return book
+    return await openLibraryBook(isbn, signal)
   } catch {
     signal?.throwIfAborted()
   }

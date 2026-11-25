@@ -65,6 +65,9 @@ test('diferencia pesquisa sem resultados de falha e rejeita ISBN inválido', asy
   assert.equal(await lookupBook(isbn), null)
   await assert.rejects(lookupBook('1234'), /ISBN/)
   assert.equal(fetch.mock.callCount(), 2)
+  fetch.mock.mockImplementation(async (url) => url.hostname === 'www.googleapis.com'
+    ? new Response(null, { status: 429 }) : Response.json({}))
+  assert.equal(await lookupBook(isbn), null)
   fetch.mock.mockImplementation(async () => new Response(null, { status: 503 }))
   await assert.rejects(lookupBook(isbn), /pesquisa não pôde/)
 })
