@@ -19,7 +19,7 @@ export function annualProgress(finished, year, goal) {
   const completed = completedInYear(finished, year).length
   return {
     completed, remaining: goal === null ? null : Math.max(0, goal - completed),
-    percentage: goal === null ? null : Math.floor(completed / goal * 100),
+    percentage: goal === null ? null : Math.floor(completed * 100 / goal),
   }
 }
 

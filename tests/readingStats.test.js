@@ -32,5 +32,9 @@ test('a meta anual usa uma conclusão datada por registro e aceita superar a met
   ])
   assert.deepEqual(annualProgress(stats.finished, 2026, 1), { completed: 2, remaining: 0, percentage: 200 })
   assert.deepEqual(annualProgress(stats.finished, 2026, 3), { completed: 2, remaining: 1, percentage: 66 })
+  const sameYear = Array.from({ length: 29 }, (_, index) => ({
+    key: 'physical:' + index, status: 'finished', reading: { completedDate: '2026-01-01' },
+  }))
+  assert.equal(annualProgress(readingStats(sameYear).finished, 2026, 100).percentage, 29)
   assert.deepEqual(monthlyCompletions(stats.finished, 2026), [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
 })
