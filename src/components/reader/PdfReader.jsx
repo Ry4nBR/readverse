@@ -50,7 +50,7 @@ export default function PdfReader({ file, book, onPosition }) {
     </div>}
     {error && <p role="alert" className={styles.error}>{error}</p>}
     <div className={styles.pdf} ref={viewport} aria-label="Conteúdo do PDF">
-      <Document file={file} options={pdfOptions} loading={<p role="status">Carregando PDF…</p>}
+      <Document file={file} options={pdfOptions} suspense={false} loading={<p role="status">Carregando PDF…</p>}
         error={<p>O PDF não pôde ser aberto.</p>}
         onSourceError={() => setError('Não foi possível ler o arquivo PDF.')}
         onLoadError={() => setError('O PDF é inválido ou não pôde ser carregado.')}
@@ -61,7 +61,8 @@ export default function PdfReader({ file, book, onPosition }) {
           setDocument({ pages: numPages, page: Math.max(1, Math.min(numPages, saved || 1)) })
           setRendering(true)
         }}>
-        {document && width > 0 && <Page pageNumber={page} width={width} scale={zoom}
+        {document && width > 0 && <Page pageNumber={page} width={width} scale={zoom} suspense={false}
+          error={<p>Esta página do PDF não pôde ser exibida.</p>}
           renderAnnotationLayer={false} loading={<p role="status">Renderizando página…</p>}
           onLoadError={() => { setRendering(false); setError('Não foi possível carregar esta página do PDF.') }}
           onRenderError={() => { setRendering(false); setError('Não foi possível renderizar esta página do PDF.') }}
