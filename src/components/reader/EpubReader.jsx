@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import ePub from 'epubjs'
+import { epubLocation, flattenToc } from '../../utils/epubNavigation.js'
+import ReaderNavigation from './ReaderNavigation.jsx'
 import styles from './Reader.module.css'
 
 function limitContent(contents) {
@@ -11,6 +13,10 @@ function limitContent(contents) {
 
 export default function EpubReader({ file }) {
   const viewport = useRef(null)
+  const rendition = useRef(null)
+  const [location, setLocation] = useState(null)
+  const [toc, setToc] = useState([])
+  const [navigationError, setNavigationError] = useState(false)
   const [state, setState] = useState('loading')
 
   useEffect(() => {
@@ -28,7 +34,14 @@ export default function EpubReader({ file }) {
         renderer = publication.renderTo(viewport.current, {
           width: '100%', height: '100%', flow: 'paginated', spread: 'none', allowScriptedContent: false,
         })
-        renderer.on('displayError', () => { if (active) setState('error') })
+        rendition.current = renderer
+        renderer.on('displayError', () => { if (active) setNavigationError(true) })
+        renderer.on('relocated', (current) => {
+          if (active) setLocation(epubLocation(publication, current))
+        })
+        void publication.loaded.navigation.then((navigation) => {
+          if (active) setToc(flattenToc(navigation.toc))
+        }, () => {})
         await renderer.display()
         if (active) setState('ready')
       } catch {
@@ -38,14 +51,42 @@ export default function EpubReader({ file }) {
     void open()
     return () => {
       active = false
+      rendition.current = null
       renderer?.destroy()
       publication?.destroy()
     }
   }, [file])
 
+  function navigate(action, target) {
+    setNavigationError(false)
+    const current = rendition.current
+    if (current) void current[action](target).catch(() => setNavigationError(true))
+  }
+
   return <>
     {state === 'loading' && <p role="status">Carregando EPUB…</p>}
     {state === 'error' && <p role="alert" className={styles.error}>Não foi possível abrir este EPUB.</p>}
+    {navigationError && <p role="alert" className={styles.error}>Não foi possível exibir essa parte do EPUB.</p>}
+    {state === 'ready' && <div className={styles.toolbar}>
+      {toc.length > 0 && <label>Sumário
+        <select value={toc.find(({ href }) => href.split('#')[0] === location?.href)?.href ?? ''}
+          onChange={(event) => navigate('display', event.target.value)}>
+          <option value="" disabled>Ir para um capítulo</option>
+          {toc.map(({ href, label, depth }, index) =>
+            <option key={index} value={href}>{'– '.repeat(depth)}{label}</option>,
+          )}
+        </select>
+      </label>}
+      <div className={styles.controls} aria-label="Navegação por capítulos">
+        <button type="button" disabled={!location?.previousChapter}
+          onClick={() => navigate('display', location.previousChapter)}>Capítulo anterior</button>
+        <button type="button" disabled={!location?.nextChapter}
+          onClick={() => navigate('display', location.nextChapter)}>Próximo capítulo</button>
+      </div>
+    </div>}
     <div className={styles.epub} aria-label="Conteúdo do EPUB" ref={viewport} />
+    {state === 'ready' && <ReaderNavigation label={location ? 'Página ' + location.page + ' de ' + location.pages + ' no capítulo' : 'Calculando página…'}
+      previous={() => navigate('prev')} next={() => navigate('next')}
+      disablePrevious={!location || location.first} disableNext={!location || location.last} />}
   </>
 }
