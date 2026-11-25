@@ -42,10 +42,10 @@
   width: 100%;
   min-width: 0;
   color: inherit;
-  background: white;
+  background: var(--input);
   font: inherit;
   font-weight: 400;
-  border: 1px solid #9a9183;
+  border: 1px solid var(--control-border);
   border-radius: .5rem;
   padding: .5rem .625rem;
 }
@@ -86,12 +86,12 @@
   cursor: pointer;
 }
 
-.primary { background: var(--accent); color: var(--surface); }
+.primary { background: var(--accent); color: var(--on-accent); }
 .secondary { background: var(--surface); color: var(--accent); }
 .coverField button { margin-top: .5rem; }
 .page button:disabled { opacity: .65; cursor: wait; }
 
-.error { color: #8e2723; }
+.error { color: var(--danger); }
 
 .pageHeader {
   display: flex;
@@ -149,9 +149,9 @@
 .description { margin-top: .375rem; white-space: pre-wrap; }
 
 .danger {
-  border-color: #8e2723;
+  border-color: var(--danger);
   background: var(--surface);
-  color: #8e2723;
+  color: var(--danger);
 }
 
 .dialog {
@@ -164,4 +164,4 @@
 }
 
 .dialog p { margin-block: .75rem 1rem; }
-.dialog::backdrop { background: rgb(41 37 30 / .5); }
+.dialog::backdrop { background: var(--backdrop); }

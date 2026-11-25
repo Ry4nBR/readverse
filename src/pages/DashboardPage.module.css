@@ -3,7 +3,7 @@
 .intro {
   padding: 2.5rem;
   border-radius: var(--radius);
-  color: #fffdf8;
+  color: var(--on-accent);
   background: var(--accent);
 }
 

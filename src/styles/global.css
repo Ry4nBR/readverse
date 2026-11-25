@@ -1,7 +1,10 @@
 :root {
   font-family: 'Segoe UI', system-ui, sans-serif;
-  color: #29251e;
-  background: #f8f5ef;
+  color: var(--text);
+  background: var(--canvas);
+  color-scheme: light;
+  --text: #29251e;
+  --canvas: #f8f5ef;
   font-synthesis: none;
   line-height: 1.5;
   --surface: #fffdf8;
@@ -9,8 +12,42 @@
   --muted: #655c51;
   --accent: #365341;
   --accent-light: #e5ede2;
+  --on-accent: #fffdf8;
+  --input: #fff;
+  --control-border: #9a9183;
+  --danger: #8e2723;
+  --backdrop: rgb(0 0 0 / .55);
   --radius: 1rem;
   --serif: Georgia, serif;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --text: #f4ede1;
+  --canvas: #191b1a;
+  --surface: #242825;
+  --border: #424a43;
+  --muted: #c2c9bf;
+  --accent: #a5d5ac;
+  --accent-light: #344738;
+  --on-accent: #17241b;
+  --input: #1c201d;
+  --control-border: #788777;
+  --danger: #ffaca5;
+}
+
+:root[data-theme='sepia'] {
+  --text: #3f2b1b;
+  --canvas: #f1e5cd;
+  --surface: #fbefd8;
+  --border: #d7bd97;
+  --muted: #694e36;
+  --accent: #784631;
+  --accent-light: #edd4b4;
+  --on-accent: #fff5e6;
+  --input: #fff7e8;
+  --control-border: #9a7554;
+  --danger: #8e3428;
 }
 
 * { box-sizing: border-box; }

@@ -1,4 +1,4 @@
-import { BookMarked, BookOpen, Import, LibraryBig, Plus } from 'lucide-react'
+import { BookMarked, BookOpen, Import, LibraryBig, Palette, Plus } from 'lucide-react'
 
 export const sections = [
   { to: '/biblioteca', label: 'Meus livros', icon: BookMarked },
@@ -6,5 +6,6 @@ export const sections = [
   { to: '/biblioteca-digital', label: 'Estante digital', icon: BookOpen },
   { to: '/importacao', label: 'Importar arquivo', icon: Import },
   { to: '/estantes', label: 'Estantes', icon: LibraryBig },
+  { to: '/aparencia', label: 'Aparência', icon: Palette },
   { to: '/leituras', label: 'Leituras', icon: BookOpen },
 ]

@@ -1,3 +1,4 @@
+import AppearanceProvider from '../contexts/AppearanceProvider.jsx'
 import { Outlet } from 'react-router-dom'
 import Header from '../components/Header.jsx'
 import Sidebar from '../components/Sidebar.jsx'
@@ -5,6 +6,7 @@ import styles from './LibraryLayout.module.css'
 
 export default function LibraryLayout() {
   return (
+    <AppearanceProvider>
     <div className={styles.shell}>
       <a className={styles.skipLink} href="#conteudo">Pular para o conteúdo</a>
       <Sidebar />
@@ -15,5 +17,6 @@ export default function LibraryLayout() {
         </main>
       </div>
     </div>
+    </AppearanceProvider>
   )
 }
