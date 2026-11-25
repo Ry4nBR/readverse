@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import BookCover from '../components/BookCover.jsx'
+import DeleteBookDialog from '../components/DeleteBookDialog.jsx'
 import DigitalBookRecord from '../components/DigitalBookRecord.jsx'
 import shared from '../components/PhysicalBook.module.css'
-import { getDigitalFile } from '../services/digitalBooks.js'
+import { deleteDigitalBook, getDigitalFile } from '../services/digitalBooks.js'
 import { readingStatuses } from '../utils/bookForm.js'
 
 const dateFormat = new Intl.DateTimeFormat('pt-BR')
@@ -11,6 +12,7 @@ const sizeFormat = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 })
 
 function BookDetails({ book }) {
   const { state } = useLocation()
+  const navigate = useNavigate()
   const [downloading, setDownloading] = useState(false)
   const [error, setError] = useState('')
   const size = book.size < 1024 ? book.size + ' bytes' : book.size < 1024 ** 2 ?
@@ -20,6 +22,11 @@ function BookDetails({ book }) {
     ['Importado em', dateFormat.format(book.importedAt)], ['Gênero', book.genre],
     ['Status de leitura', readingStatuses[book.status]],
   ].filter(([, value]) => value)
+
+  async function remove() {
+    await deleteDigitalBook(book.id)
+    navigate('/biblioteca-digital', { replace: true, state: { notice: 'Livro digital excluído.' } })
+  }
 
   async function download() {
     setDownloading(true)
@@ -62,6 +69,8 @@ function BookDetails({ book }) {
           <button type="button" className={shared.primary} disabled={downloading} onClick={download}>
             {downloading ? 'Buscando arquivo…' : 'Baixar original'}
           </button>
+          <DeleteBookDialog title={book.title} description="e seu arquivo original serão removidos da estante digital."
+            onDelete={remove} />
         </div>
       </article>
     </section>
