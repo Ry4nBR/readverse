@@ -2,7 +2,7 @@ import { getDigitalBook, getDigitalFile } from './digitalBooks.js'
 import { detectDigitalFormat } from './digitalFile.js'
 
 export function canReadDigitalBook(book) {
-  return book.format === 'epub'
+  return book.format === 'epub' || book.format === 'pdf'
 }
 
 export async function openReaderFile(id) {

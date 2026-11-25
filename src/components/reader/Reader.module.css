@@ -22,6 +22,21 @@
   border-radius: .75rem;
 }
 
+.pdf {
+  overflow: auto;
+  max-height: 78dvh;
+  min-height: 12rem;
+  min-width: 0;
+  padding: .5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+}
+
+.pdf canvas { display: block; }
+.pdf :global(.react-pdf__Page) { width: max-content; margin-inline: auto; }
+.rendering { margin: .5rem 0 0; }
+
 .epub iframe { display: block; max-width: 100%; }
 .toolbar, .controls {
   display: flex;

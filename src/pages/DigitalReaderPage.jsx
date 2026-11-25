@@ -6,13 +6,15 @@ import ReaderShell from '../components/reader/ReaderShell.jsx'
 import styles from '../components/reader/Reader.module.css'
 import { openReaderFile } from '../services/readerFile.js'
 
+const PdfReader = lazy(() => import('../components/reader/PdfReader.jsx'))
 const EpubReader = lazy(() => import('../components/reader/EpubReader.jsx'))
 
 function OpenReader({ book, file, format }) {
   const activity = useReaderActivity(book, format)
+  const Reader = format === 'pdf' ? PdfReader : EpubReader
   return <ReaderShell book={book}>
     <Suspense fallback={<p role="status">Preparando leitor…</p>}>
-      <EpubReader file={file} book={book} onPosition={activity.onPosition} />
+      <Reader file={file} book={book} onPosition={activity.onPosition} />
     </Suspense>
     <ReaderProgress {...activity} />
   </ReaderShell>
