@@ -112,30 +112,6 @@
 
 .pageHeader p { color: var(--muted); }
 
-.shelf {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(21rem, 100%), 1fr));
-  gap: 1rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.card {
-  min-height: 100%;
-  display: flex;
-  align-items: flex-start;
-  gap: clamp(.75rem, 2vw, 1.25rem);
-  padding: clamp(.75rem, 3vw, 1.25rem);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-
-.cardInfo { min-width: 0; overflow-wrap: anywhere; }
-.card h2 { font: 700 1.25rem var(--serif); }
-.cardMeta { margin-block: .5rem; color: var(--muted); font-size: .9375rem; }
-
 .detailsHeader {
   display: flex;
   align-items: center;
