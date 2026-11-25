@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import LibraryLayout from '../layouts/LibraryLayout.jsx'
 import DashboardPage from '../pages/DashboardPage.jsx'
 
+import NotFoundPage from '../pages/NotFoundPage.jsx'
 import SectionPage from '../pages/SectionPage.jsx'
 import { sections } from './sections.js'
 
@@ -13,6 +14,7 @@ export default function AppRoutes() {
         {sections.map(({ to, label }) => (
           <Route key={to} path={to} element={<SectionPage title={label} />} />
         ))}
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   )
