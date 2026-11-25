@@ -3,6 +3,7 @@ import ePub from 'epubjs'
 import { epubLocation, flattenToc } from '../../utils/epubNavigation.js'
 import { getReaderPreferences, saveReaderPreferences } from '../../services/readerPreferences.js'
 import { applyEpubStyles, epubPalette } from '../../utils/epubStyles.js'
+import EpubBookmarks from './EpubBookmarks.jsx'
 import ReaderSettings from './ReaderSettings.jsx'
 import ReaderNavigation from './ReaderNavigation.jsx'
 import styles from './Reader.module.css'
@@ -99,6 +100,8 @@ export default function EpubReader({ file, book, onPosition }) {
     if (current) void current[action](target).catch(() => setNavigationError(true))
   }
 
+  const chapter = toc.find(({ href }) => href.split('#')[0] === location?.href)?.label ?? 'Capítulo ' + ((location?.index ?? 0) + 1)
+
   return <>
     {state === 'loading' && <p role="status">Carregando EPUB…</p>}
     {state === 'error' && <p role="alert" className={styles.error}>Não foi possível abrir este EPUB.</p>}
@@ -121,6 +124,8 @@ export default function EpubReader({ file, book, onPosition }) {
           onClick={() => navigate('display', location.nextChapter)}>Próximo capítulo</button>
       </div>
     </div>}
+    {state === 'ready' && <EpubBookmarks book={book} current={location?.cfi} chapter={chapter}
+      goTo={(cfi) => navigate('display', cfi)} />}
     <div className={styles.epub} style={{ background: epubPalette[preferences.theme].background }} aria-label="Conteúdo do EPUB" ref={viewport} />
     {state === 'ready' && <ReaderNavigation label={location ? 'Página ' + location.page + ' de ' + location.pages + ' no capítulo' : 'Calculando página…'}
       previous={() => navigate('prev')} next={() => navigate('next')}

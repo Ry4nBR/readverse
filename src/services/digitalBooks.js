@@ -147,6 +147,18 @@ export async function saveDigitalReaderPosition(id, format, value, percentage) {
   })
 }
 
+export function toggleEpubBookmark(id, cfi, label) {
+  return updateReadingRecord(id, (book) => {
+    const position = readerPosition('epub', cfi)
+    const bookmarks = book.readerBookmarks ?? []
+    if (bookmarks.some((entry) => entry.cfi === cfi)) {
+      return { ...book, readerBookmarks: bookmarks.filter((entry) => entry.cfi !== cfi) }
+    }
+    if (bookmarks.length >= 100) throw new DigitalStorageError('O limite é de 100 marcadores por livro.')
+    return { ...book, readerBookmarks: [{ cfi: position.cfi, label: label.slice(0, 200) }, ...bookmarks] }
+  })
+}
+
 export function deleteDigitalBook(id) {
   return transact([bookStore, fileStore], 'readwrite', (transaction) => {
     transaction.objectStore(bookStore).delete(id)

@@ -67,6 +67,8 @@
 .settings summary { cursor: pointer; width: fit-content; padding: .375rem; font-weight: 650; }
 .settings[open] summary { margin-bottom: .375rem; }
 
+.bookmarks { display: grid; gap: .5rem; padding-inline-start: 1.25rem; overflow-wrap: anywhere; }
+
 .progress { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .75rem; }
 .progress progress { width: min(12rem, 100%); accent-color: var(--accent); }
 
