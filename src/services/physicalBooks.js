@@ -52,6 +52,15 @@ export function getPhysicalBook(id) {
   })
 }
 
+export function findPhysicalBookByIsbn(isbn) {
+  const key = isbnKey(isbn)
+  if (!key) return Promise.resolve(undefined)
+  return transact('readonly', (store, done) => {
+    const request = store.index('isbnKey').get(key)
+    request.onsuccess = () => done(request.result)
+  })
+}
+
 export function deletePhysicalBook(id) {
   return transact('readwrite', (store) => store.delete(id))
 }

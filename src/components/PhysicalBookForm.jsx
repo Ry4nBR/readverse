@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { DuplicateBookError } from '../services/physicalBooks.js'
 import { emptyBook, readingStatuses, validateBookForm } from '../utils/bookForm.js'
 import BookCover from './BookCover.jsx'
+import IsbnLookup from './IsbnLookup.jsx'
 import styles from './PhysicalBook.module.css'
 
 const fields = [
@@ -16,12 +17,20 @@ const fields = [
 const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 const coverSizeLimit = 5 * 1024 * 1024
 
-export default function PhysicalBookForm({ initialBook = emptyBook, onSave }) {
+export default function PhysicalBookForm({ initialBook = emptyBook, onSave, allowLookup = false }) {
   const [book, setBook] = useState(initialBook)
   const [error, setError] = useState('')
   const [coverError, setCoverError] = useState('')
   const [checkingCover, setCheckingCover] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [searching, setSearching] = useState(false)
+  const busy = saving || checkingCover || searching
+
+  function applyLookup(result) {
+    const available = Object.fromEntries(Object.entries(result).filter(([, value]) => value))
+    setBook((current) => ({ ...current, ...available, coverUrl: current.coverBlob ? '' : available.coverUrl ?? '' }))
+    setError('')
+  }
 
   function update(event) {
     const { name, value } = event.target
@@ -53,7 +62,7 @@ export default function PhysicalBookForm({ initialBook = emptyBook, onSave }) {
 
   async function submit(event) {
     event.preventDefault()
-    if (saving || checkingCover) return
+    if (busy) return
     const message = validateBookForm(book)
     if (message) {
       setError(message)
@@ -76,7 +85,8 @@ export default function PhysicalBookForm({ initialBook = emptyBook, onSave }) {
 
   return (
     <form className={styles.panel} onSubmit={submit}>
-      <fieldset disabled={saving || checkingCover} className={styles.form}>
+      {allowLookup && <IsbnLookup disabled={busy} onResult={applyLookup} onLoadingChange={setSearching} />}
+      <fieldset disabled={busy} className={styles.form}>
         <legend>Dados do livro</legend>
         <div className={styles.fields}>
           {fields.map(({ name, label, ...attributes }) => (
@@ -117,7 +127,7 @@ export default function PhysicalBookForm({ initialBook = emptyBook, onSave }) {
       </fieldset>
       {error && <p role="alert" className={styles.error}>{error}</p>}
       <div className={styles.actions}>
-        <button className={styles.primary} disabled={saving || checkingCover}>
+        <button className={styles.primary} disabled={busy}>
           {saving ? 'Salvando…' : checkingCover ? 'Verificando imagem…' : 'Salvar livro'}
         </button>
         <Link to="/biblioteca">Cancelar</Link>

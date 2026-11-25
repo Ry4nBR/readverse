@@ -13,7 +13,7 @@ export default function NewPhysicalBookPage() {
   return (
     <section className={styles.page}>
       <h1>Cadastrar livro</h1>
-      <PhysicalBookForm onSave={save} />
+      <PhysicalBookForm allowLookup onSave={save} />
     </section>
   )
 }
