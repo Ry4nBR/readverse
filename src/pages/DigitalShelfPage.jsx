@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import BookCover from '../components/BookCover.jsx'
+import BookDisplay from '../components/BookDisplay.jsx'
+import DisplayModeSelect from '../components/DisplayModeSelect.jsx'
 import shared from '../components/PhysicalBook.module.css'
-import styles from '../components/DigitalLibrary.module.css'
 import { listDigitalBooks } from '../services/digitalBooks.js'
 import { readingStatuses } from '../utils/bookForm.js'
 import { searchKey } from '../utils/librarySearch.js'
@@ -62,6 +62,7 @@ export default function DigitalShelfPage() {
         <>
           <div className={shared.panel}>
             <div className={shared.fields}>
+              <DisplayModeSelect />
               <label>
                 Buscar por título ou autor
                 <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} />
@@ -91,21 +92,9 @@ export default function DigitalShelfPage() {
               </label>
             </div>
           </div>
-          {visible.length ? <ul className={shared.shelf}>
-            {visible.map((book) => (
-              <li key={book.id}>
-                <article className={shared.card}>
-                  <BookCover coverBlob={book.coverBlob} />
-                  <div className={shared.cardInfo}>
-                    <span className={styles.format}>{book.format.toUpperCase()}</span>
-                    <h2><Link to={'/biblioteca-digital/' + book.id}>{book.title}</Link></h2>
-                    <p>{book.author}</p>
-                    <p className={shared.cardMeta}>{readingStatuses[book.status]}{book.genre && ' · ' + book.genre}</p>
-                  </div>
-                </article>
-              </li>
-            ))}
-          </ul> : <p className={shared.panel} role="status">Nenhum livro corresponde à busca e aos filtros.</p>}
+          {visible.length ? <BookDisplay books={visible.map((book) => ({
+            ...book, formatLabel: book.format.toUpperCase(), href: '/biblioteca-digital/' + book.id,
+          }))} /> : <p className={shared.panel} role="status">Nenhum livro corresponde à busca e aos filtros.</p>}
         </>
       )}
     </section>

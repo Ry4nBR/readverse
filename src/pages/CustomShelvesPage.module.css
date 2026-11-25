@@ -1,3 +1,5 @@
+.view { max-width: 18rem; }
+
 .shelves {
   display: grid;
   gap: 1rem;

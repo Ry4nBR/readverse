@@ -1,3 +1,4 @@
+import DisplayModeSelect from '../components/DisplayModeSelect.jsx'
 import { useState } from 'react'
 import { useAppearance } from '../contexts/appearanceContext.js'
 import { themes } from '../services/appearance.js'
@@ -26,6 +27,7 @@ export default function AppearancePage() {
               {Object.entries(themes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
           </label>
+          <DisplayModeSelect />
           <label>Cor de destaque
             <input type="color" value={preferences.accent ?? { light: '#365341', dark: '#a5d5ac', sepia: '#784631' }[preferences.theme]}
               onChange={(event) => apply({ accent: event.target.value })} />

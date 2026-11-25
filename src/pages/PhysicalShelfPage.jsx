@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import PhysicalBookCard from '../components/PhysicalBookCard.jsx'
+import BookDisplay from '../components/BookDisplay.jsx'
+import DisplayModeSelect from '../components/DisplayModeSelect.jsx'
 import styles from '../components/PhysicalBook.module.css'
 import { usePhysicalBooks } from '../hooks/usePhysicalBooks.js'
 import { readingStatuses } from '../utils/bookForm.js'
@@ -45,6 +46,7 @@ export default function PhysicalShelfPage() {
         <>
           <div className={styles.panel}>
             <div className={styles.fields}>
+              <DisplayModeSelect />
               <label>
                 Buscar por título ou autor
                 <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} />
@@ -70,9 +72,9 @@ export default function PhysicalShelfPage() {
             </div>
           </div>
           {visible.length ? (
-            <ul className={styles.shelf}>
-              {visible.map((book) => <li key={book.id}><PhysicalBookCard book={book} /></li>)}
-            </ul>
+            <BookDisplay books={visible.map((book) => ({
+              ...book, formatLabel: 'Físico', href: '/biblioteca/' + book.id,
+            }))} />
           ) : <p role="status" className={styles.panel}>Nenhum livro corresponde à busca e aos filtros.</p>}
         </>
       )}

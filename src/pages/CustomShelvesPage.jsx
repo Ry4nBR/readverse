@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import DisplayModeSelect from '../components/DisplayModeSelect.jsx'
 import DeleteBookDialog from '../components/DeleteBookDialog.jsx'
 import ShelfContents from '../components/ShelfContents.jsx'
 import ShelfOrganizer from '../components/ShelfOrganizer.jsx'
@@ -69,6 +70,7 @@ export default function CustomShelvesPage() {
         <button type="button" className={shared.primary} disabled={!shelves || busy}
           onClick={() => { setError(''); setEditing({}) }}>Nova estante</button>
       </header>
+      <div className={styles.view}><DisplayModeSelect /></div>
       {error && <p role="alert" className={shared.error}>{error}</p>}
       {notice && <p role="status">{notice}</p>}
       {editing && <ShelfForm key={editing.id ?? 'nova'} shelf={editing.id ? editing : undefined}
