@@ -7,7 +7,7 @@ export default function NewPhysicalBookPage() {
   const navigate = useNavigate()
   async function save(book) {
     await savePhysicalBook(book)
-    navigate('/biblioteca')
+    navigate('/biblioteca', { state: { notice: 'Livro cadastrado.' } })
   }
 
   return (
