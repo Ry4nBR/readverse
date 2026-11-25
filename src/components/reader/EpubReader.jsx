@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import ePub from 'epubjs'
 import { epubLocation, flattenToc } from '../../utils/epubNavigation.js'
+import { getReaderPreferences, saveReaderPreferences } from '../../services/readerPreferences.js'
+import { applyEpubStyles } from '../../utils/epubStyles.js'
+import ReaderSettings from './ReaderSettings.jsx'
 import ReaderNavigation from './ReaderNavigation.jsx'
 import styles from './Reader.module.css'
 
@@ -12,6 +15,9 @@ function limitContent(contents) {
 }
 
 export default function EpubReader({ file, book, onPosition }) {
+  const [preferences, setPreferences] = useState(getReaderPreferences)
+  const [settingsError, setSettingsError] = useState('')
+  const currentPreferences = useRef(preferences)
   const viewport = useRef(null)
   const rendition = useRef(null)
   const [location, setLocation] = useState(null)
@@ -37,6 +43,7 @@ export default function EpubReader({ file, book, onPosition }) {
           width: '100%', height: '100%', flow: 'paginated', spread: 'none', allowScriptedContent: false,
         })
         rendition.current = renderer
+        renderer.hooks.content.register((contents) => applyEpubStyles(contents, currentPreferences.current))
         renderer.on('displayError', () => {
           if (active) {
             setNavigationError(true)
@@ -69,6 +76,23 @@ export default function EpubReader({ file, book, onPosition }) {
     if (state === 'ready' && location) onPosition(location.cfi, location.percentage)
   }, [location, onPosition, state])
 
+  function updatePreferences(changes) {
+    const next = { ...preferences, ...changes }
+    currentPreferences.current = next
+    setPreferences(next)
+    try {
+      saveReaderPreferences(next)
+      setSettingsError('')
+    } catch {
+      setSettingsError('Não foi possível guardar as configurações neste navegador.')
+    }
+    const current = rendition.current
+    if (current) {
+      current.getContents().forEach((contents) => applyEpubStyles(contents, next))
+      if (location?.cfi) void current.display(location.cfi).catch(() => setNavigationError(true))
+    }
+  }
+
   function navigate(action, target) {
     setNavigationError(false)
     const current = rendition.current
@@ -79,6 +103,7 @@ export default function EpubReader({ file, book, onPosition }) {
     {state === 'loading' && <p role="status">Carregando EPUB…</p>}
     {state === 'error' && <p role="alert" className={styles.error}>Não foi possível abrir este EPUB.</p>}
     {navigationError && <p role="alert" className={styles.error}>Não foi possível exibir essa parte do EPUB.</p>}
+    {state === 'ready' && <ReaderSettings preferences={preferences} onChange={updatePreferences} error={settingsError} />}
     {state === 'ready' && <div className={styles.toolbar}>
       {toc.length > 0 && <label>Sumário
         <select value={toc.find(({ href }) => href.split('#')[0] === location?.href)?.href ?? ''}

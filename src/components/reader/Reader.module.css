@@ -46,6 +46,9 @@
 .shell button { cursor: pointer; }
 .shell button:disabled { opacity: .55; cursor: default; }
 
+.settings summary { cursor: pointer; width: fit-content; padding: .375rem; font-weight: 650; }
+.settings[open] summary { margin-bottom: .375rem; }
+
 .progress { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .75rem; }
 .progress progress { width: min(12rem, 100%); accent-color: var(--accent); }
 
