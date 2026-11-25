@@ -1,10 +1,11 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import BookCover from '../components/BookCover.jsx'
 import PhysicalBookRecord from '../components/PhysicalBookRecord.jsx'
 import styles from '../components/PhysicalBook.module.css'
 import { readingStatuses } from '../utils/bookForm.js'
 
 function BookDetails({ book }) {
+  const { state } = useLocation()
   const rows = [
     ['Editora', book.publisher], ['Ano de publicação', book.year], ['ISBN', book.isbn],
     ['Gênero', book.genre], ['Status de leitura', readingStatuses[book.status]],
@@ -13,6 +14,7 @@ function BookDetails({ book }) {
   return (
     <section className={styles.page}>
       <Link to="/biblioteca">Voltar para a estante</Link>
+      {state?.notice && <p role="status">{state.notice}</p>}
       <article className={styles.panel}>
         <div className={styles.detailsHeader}>
           <BookCover coverBlob={book.coverBlob} coverUrl={book.coverUrl} />
@@ -30,6 +32,9 @@ function BookDetails({ book }) {
           <h2>Descrição</h2>
           <p className={styles.description}>{book.description}</p>
         </section>}
+        <div className={styles.actions}>
+          <Link className={styles.secondary} to="editar">Editar livro</Link>
+        </div>
       </article>
     </section>
   )

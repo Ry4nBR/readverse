@@ -17,7 +17,7 @@ const fields = [
 const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 const coverSizeLimit = 5 * 1024 * 1024
 
-export default function PhysicalBookForm({ initialBook = emptyBook, onSave, allowLookup = false }) {
+export default function PhysicalBookForm({ initialBook = emptyBook, onSave, allowLookup = false, cancelTo = '/biblioteca' }) {
   const [book, setBook] = useState(initialBook)
   const [error, setError] = useState('')
   const [coverError, setCoverError] = useState('')
@@ -130,7 +130,7 @@ export default function PhysicalBookForm({ initialBook = emptyBook, onSave, allo
         <button className={styles.primary} disabled={busy}>
           {saving ? 'Salvando…' : checkingCover ? 'Verificando imagem…' : 'Salvar livro'}
         </button>
-        <Link to="/biblioteca">Cancelar</Link>
+        <Link to={cancelTo}>Cancelar</Link>
       </div>
     </form>
   )

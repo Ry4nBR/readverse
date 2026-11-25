@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import LibraryLayout from '../layouts/LibraryLayout.jsx'
 import DashboardPage from '../pages/DashboardPage.jsx'
 
+import EditPhysicalBookPage from '../pages/EditPhysicalBookPage.jsx'
 import NewPhysicalBookPage from '../pages/NewPhysicalBookPage.jsx'
 import NotFoundPage from '../pages/NotFoundPage.jsx'
 import PhysicalBookDetailsPage from '../pages/PhysicalBookDetailsPage.jsx'
@@ -18,6 +19,7 @@ export default function AppRoutes() {
         <Route index element={<DashboardPage />} />
         <Route path="biblioteca" element={<PhysicalShelfPage />} />
         <Route path="biblioteca/:bookId" element={<PhysicalBookDetailsPage />} />
+        <Route path="biblioteca/:bookId/editar" element={<EditPhysicalBookPage />} />
         <Route path="cadastro" element={<NewPhysicalBookPage />} />
         {futureSections.map(({ to, label }) => (
           <Route key={to} path={to} element={<SectionPage title={label} />} />
