@@ -40,7 +40,12 @@ export function inspectMobi(bytes) {
   if (first + 24 > second || ascii(bytes, first + 16, first + 20) !== 'MOBI') throw invalid()
   const headerLength = view.getUint32(first + 20)
   const headerEnd = first + 16 + headerLength
-  if (headerLength < 24 || headerEnd > second || view.getUint16(first + 8) > count - 1) throw invalid()
+  if (headerLength < 24 || headerEnd > second) throw invalid()
+
+  const compression = view.getUint16(first)
+  const textLength = view.getUint32(first + 4)
+  const textRecords = view.getUint16(first + 8)
+  if (![1, 2, 17480].includes(compression) || !textLength || !textRecords || textRecords >= count) throw invalid()
 
   const encoding = view.getUint32(first + 28) === 1252 ? 'windows-1252' : 'utf-8'
   const decoder = new TextDecoder(encoding)

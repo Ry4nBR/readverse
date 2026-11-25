@@ -10,6 +10,8 @@ function makeMobi() {
   view.setUint16(76, 2)
   view.setUint32(78, 96)
   view.setUint32(86, 240)
+  view.setUint16(96, 1)
+  view.setUint32(100, 5)
   view.setUint16(104, 1)
   write('MOBI', 112)
   view.setUint32(116, 76)
@@ -23,6 +25,7 @@ function makeMobi() {
   view.setUint32(204, 13)
   write('Autor', 208)
   write('Titulo', 220)
+  write('Texto', 240)
   return bytes
 }
 
@@ -33,6 +36,9 @@ test('lê o título e o autor de um contêiner MOBI', () => {
 test('rejeita tabelas truncadas e registros fora do arquivo', () => {
   const bytes = makeMobi()
   assert.throws(() => inspectMobi(bytes.subarray(0, 200)), /inválida/)
+  const empty = makeMobi()
+  new DataView(empty.buffer).setUint32(100, 0)
+  assert.throws(() => inspectMobi(empty), /inválida/)
   new DataView(bytes.buffer).setUint32(86, 90)
   assert.throws(() => inspectMobi(bytes), /inválida/)
 })
