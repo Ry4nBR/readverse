@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import LibraryLayout from '../layouts/LibraryLayout.jsx'
 import DashboardPage from '../pages/DashboardPage.jsx'
 
+import DigitalShelfPage from '../pages/DigitalShelfPage.jsx'
 import DigitalImportPage from '../pages/DigitalImportPage.jsx'
 import EditPhysicalBookPage from '../pages/EditPhysicalBookPage.jsx'
 import NewPhysicalBookPage from '../pages/NewPhysicalBookPage.jsx'
@@ -11,7 +12,7 @@ import PhysicalShelfPage from '../pages/PhysicalShelfPage.jsx'
 import SectionPage from '../pages/SectionPage.jsx'
 import { sections } from './sections.js'
 
-const futureSections = sections.filter(({ to }) => !['/cadastro', '/biblioteca', '/importacao'].includes(to))
+const futureSections = sections.filter(({ to }) => !['/cadastro', '/biblioteca', '/biblioteca-digital', '/importacao'].includes(to))
 
 export default function AppRoutes() {
   return (
@@ -21,6 +22,7 @@ export default function AppRoutes() {
         <Route path="biblioteca" element={<PhysicalShelfPage />} />
         <Route path="biblioteca/:bookId" element={<PhysicalBookDetailsPage />} />
         <Route path="biblioteca/:bookId/editar" element={<EditPhysicalBookPage />} />
+        <Route path="biblioteca-digital" element={<DigitalShelfPage />} />
         <Route path="importacao" element={<DigitalImportPage />} />
         <Route path="cadastro" element={<NewPhysicalBookPage />} />
         {futureSections.map(({ to, label }) => (
