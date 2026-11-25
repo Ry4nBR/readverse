@@ -45,6 +45,15 @@ Os livros digitais ficam em um banco IndexedDB separado da estante física. A gr
 
 As estantes, sua ordem e os vínculos são gravados no IndexedDB. As preferências de aparência ficam no armazenamento local do navegador. Ambos são acessados por serviços próprios, com dados separados dos cadastros e arquivos. As preferências e estantes podem ser recuperadas no mesmo perfil e endereço da aplicação.
 
+## Acompanhamento de leitura
+
+- Altere o status para **Quero ler**, **Lendo** ou **Lido** pelo card ou pelos detalhes de um livro físico ou digital.
+- Nos detalhes, salve as datas de início e conclusão, a avaliação de 1 a 5, observações e o progresso de 0 a 100%. Marcar como **Lido** ou salvar 100% em **Lendo** registra a conclusão. Voltar para **Lendo** de um livro já concluído abre uma nova leitura e retira a conclusão anterior das estatísticas.
+- Na **Visão geral**, acompanhe os totais, os livros em andamento, a lista de próximas leituras, as últimas inclusões e os gráficos. A meta do ano corrente pode ser definida e alterada no painel.
+- O **Histórico de leitura** mostra os livros atualmente marcados como lidos, com datas e avaliações quando disponíveis. Livros antigos sem data de conclusão entram no total geral e no histórico. O gráfico mensal e a meta anual usam somente conclusões datadas do ano corrente.
+
+Cada cadastro físico ou digital conta uma vez, mesmo quando aparece em uma estante personalizada. Os dados de leitura são gravados junto ao registro do livro no IndexedDB. A meta fica no armazenamento local do navegador, com uma chave por ano. O progresso dos livros digitais é registrado manualmente nesta etapa. O serviço de leitura aceita atualizações parciais para a futura integração com o leitor.
+
 ## Verificar o projeto
 
 ```sh
@@ -66,4 +75,4 @@ O build é gerado em `dist/`. Em uma hospedagem estática, configure o redirecio
 - `src/services/` integra os catálogos, analisa arquivos digitais e gerencia a persistência.
 - `src/hooks/` carrega os livros para as telas.
 - `src/utils/` reúne a validação de ISBN e os dados do formulário.
-- `tests/` cobre a validação de ISBN, os catálogos, a validação de arquivos digitais, a persistência no IndexedDB e as preferências de aparência.
+- `tests/` cobre a validação de ISBN, os catálogos, a validação de arquivos digitais, a persistência no IndexedDB as preferências de aparência e as regras e estatísticas de leitura.
