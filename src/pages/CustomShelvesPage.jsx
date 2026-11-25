@@ -7,9 +7,11 @@ import ShelfForm from '../components/ShelfForm.jsx'
 import shared from '../components/PhysicalBook.module.css'
 import styles from './CustomShelvesPage.module.css'
 import { createShelf, deleteShelf, listShelves, moveShelfBook, reorderShelf, ShelfError, updateShelf } from '../services/customShelves.js'
+import { useBookRevision } from '../hooks/useBookRevision.js'
 import { listShelfBooks } from '../services/shelfCatalog.js'
 
 export default function CustomShelvesPage() {
+  const revision = useBookRevision()
   const [shelves, setShelves] = useState(null)
   const [books, setBooks] = useState(null)
   const [bookError, setBookError] = useState(false)
@@ -24,11 +26,16 @@ export default function CustomShelvesPage() {
     listShelves().then((data) => { if (active) setShelves(data) }, () => {
       if (active) setError('Não foi possível carregar as estantes neste navegador.')
     })
+    return () => { active = false }
+  }, [attempt])
+
+  useEffect(() => {
+    let active = true
     listShelfBooks().then((data) => { if (active) setBooks(data) }, () => {
       if (active) setBookError(true)
     })
     return () => { active = false }
-  }, [attempt])
+  }, [attempt, revision])
 
   async function change(operation, message) {
     if (busy) return

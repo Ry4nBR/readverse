@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import { useBookRevision } from './useBookRevision.js'
 import { listPhysicalBooks } from '../services/physicalBooks.js'
 
 export function usePhysicalBooks() {
+  const revision = useBookRevision()
   const [books, setBooks] = useState(null)
   const [loadError, setLoadError] = useState(false)
   const [attempt, setAttempt] = useState(0)
@@ -14,7 +16,7 @@ export function usePhysicalBooks() {
       if (active) setLoadError(true)
     })
     return () => { active = false }
-  }, [attempt])
+  }, [attempt, revision])
 
   function retry() {
     setLoadError(false)

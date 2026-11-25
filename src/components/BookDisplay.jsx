@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useAppearance } from '../contexts/appearanceContext.js'
-import { readingStatuses } from '../utils/bookForm.js'
+import ReadingStatusSelect from './ReadingStatusSelect.jsx'
 import BookCover from './BookCover.jsx'
 import styles from './BookDisplay.module.css'
 
@@ -16,7 +16,8 @@ export default function BookDisplay({ books }) {
         </Link>
         {preferences.showAuthors && <span className={styles.author}>{book.author}</span>}
         <span className={styles.format}>{book.formatLabel}</span>
-        <span className={styles.meta}>{[book.genre, readingStatuses[book.status]].filter(Boolean).join(' · ')}</span>
+        {book.genre && <span className={styles.meta}>{book.genre}</span>}
+        <ReadingStatusSelect book={book} />
       </article></li>
     ))}
   </ul>

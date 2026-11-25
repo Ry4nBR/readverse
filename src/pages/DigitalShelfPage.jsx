@@ -3,11 +3,13 @@ import { Link, useLocation } from 'react-router-dom'
 import BookDisplay from '../components/BookDisplay.jsx'
 import DisplayModeSelect from '../components/DisplayModeSelect.jsx'
 import shared from '../components/PhysicalBook.module.css'
+import { useBookRevision } from '../hooks/useBookRevision.js'
 import { listDigitalBooks } from '../services/digitalBooks.js'
 import { readingStatuses } from '../utils/bookForm.js'
 import { searchKey } from '../utils/librarySearch.js'
 
 export default function DigitalShelfPage() {
+  const revision = useBookRevision()
   const { state } = useLocation()
   const [books, setBooks] = useState(null)
   const [error, setError] = useState('')
@@ -25,7 +27,7 @@ export default function DigitalShelfPage() {
       if (active) setError(failure.message)
     })
     return () => { active = false }
-  }, [attempt])
+  }, [attempt, revision])
 
   const genres = new Map()
   for (const book of books ?? []) {
@@ -93,7 +95,7 @@ export default function DigitalShelfPage() {
             </div>
           </div>
           {visible.length ? <BookDisplay books={visible.map((book) => ({
-            ...book, formatLabel: book.format.toUpperCase(), href: '/biblioteca-digital/' + book.id,
+            ...book, kind: 'digital', formatLabel: book.format.toUpperCase(), href: '/biblioteca-digital/' + book.id,
           }))} /> : <p className={shared.panel} role="status">Nenhum livro corresponde à busca e aos filtros.</p>}
         </>
       )}

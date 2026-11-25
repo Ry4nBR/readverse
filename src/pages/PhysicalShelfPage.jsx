@@ -73,7 +73,7 @@ export default function PhysicalShelfPage() {
           </div>
           {visible.length ? (
             <BookDisplay books={visible.map((book) => ({
-              ...book, formatLabel: 'Físico', href: '/biblioteca/' + book.id,
+              ...book, kind: 'physical', formatLabel: 'Físico', href: '/biblioteca/' + book.id,
             }))} />
           ) : <p role="status" className={styles.panel}>Nenhum livro corresponde à busca e aos filtros.</p>}
         </>
