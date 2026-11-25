@@ -50,6 +50,12 @@
   padding: .5rem .625rem;
 }
 
+.page input[type='color'] {
+  min-height: 2.5rem;
+  padding: .25rem;
+  cursor: pointer;
+}
+
 .page textarea { resize: vertical; }
 
 .page .checkbox {
