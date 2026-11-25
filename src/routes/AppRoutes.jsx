@@ -1,9 +1,10 @@
 import { Route, Routes } from 'react-router-dom'
+import DashboardPage from '../pages/DashboardPage.jsx'
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route index element={<h1>BookShelf</h1>} />
+      <Route index element={<DashboardPage />} />
     </Routes>
   )
 }

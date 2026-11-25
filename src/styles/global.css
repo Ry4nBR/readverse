@@ -1,0 +1,27 @@
+:root {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #29251e;
+  background: #f8f5ef;
+  font-synthesis: none;
+  line-height: 1.5;
+  --surface: #fffdf8;
+  --border: #ded8cb;
+  --muted: #655c51;
+  --accent: #365341;
+  --accent-light: #e5ede2;
+  --radius: 1rem;
+  --serif: Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; }
+
+a { color: var(--accent); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+h1, h2, p { margin: 0; }
