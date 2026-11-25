@@ -117,6 +117,63 @@ O build é gerado em `dist/`. Em uma hospedagem estática, configure o redirecio
 - `src/utils/` reúne a validação de ISBN e os dados do formulário.
 - `tests/` cobre a validação de ISBN, os catálogos, a validação de arquivos digitais, a persistência no IndexedDB, as preferências de aparência e as regras e estatísticas de leitura.
 
+## Conceitos React aplicados
+
+### React State e `useState`
+O estado local controla filtros, formulários, carregamento, erros e preferências de leitura. Em `src/pages/PhysicalShelfPage.jsx`, os filtros de busca são mantidos com `useState`:
+
+```jsx
+const [query, setQuery] = useState('')
+const [genre, setGenre] = useState('')
+const [status, setStatus] = useState('')
+```
+
+### `useEffect`
+O hook `useEffect` sincroniza efeitos colaterais com o ciclo de vida dos componentes, como carregamento assíncrono do IndexedDB, listeners de tela cheia e inicialização do leitor EPUB, sempre com função de limpeza. Em `src/pages/DigitalReaderPage.jsx`:
+
+```jsx
+useEffect(() => {
+  let active = true
+  openReaderFile(id).then((data) => { if (active) setResult(data) }, (error) => {
+    if (active) setResult({ error: error.message })
+  })
+  return () => { active = false }
+}, [id])
+```
+
+### Formulários
+Os formulários utilizam componentes controlados, validação antes do envio e bloqueio durante operações assíncronas. Em `src/components/PhysicalBookForm.jsx`, `update` atualiza o estado de cada campo e `submit` valida com `validateBookForm(book)` antes de chamar `onSave(normalized)`:
+
+```jsx
+const message = validateBookForm(book)
+if (message) {
+  setError(message)
+  return
+}
+```
+
+### Consumo de APIs
+As consultas externas usam `fetch` com `AbortSignal` para cancelamento e tempo limite, tratando respostas inválidas e indisponibilidade. Em `src/services/bookLookup.js`, `lookupBook` consulta a Google Books API e recorre à Open Library API quando necessário:
+
+```js
+const response = await fetch(url, { signal: signal ? AbortSignal.any([signal, timeout]) : timeout })
+if (!response.ok) throw new Error('O catálogo respondeu com HTTP ' + response.status)
+```
+
+### React Router DOM
+A aplicação envolve `AppRoutes` em `BrowserRouter` (`src/main.jsx`) e define rotas aninhadas com `Routes` e `Route` em `src/routes/AppRoutes.jsx`, usando rotas dinâmicas (`biblioteca/:bookId`, `biblioteca-digital/:bookId/ler`), `NavLink` na barra lateral (`src/components/Sidebar.jsx`) e hooks como `useParams` e `useNavigate` nas páginas:
+
+```jsx
+<Routes>
+  <Route path="biblioteca-digital/:bookId/ler" element={<DigitalReaderPage />} />
+  <Route element={<LibraryLayout />}>
+    <Route index element={<DashboardPage />} />
+    <Route path="biblioteca" element={<PhysicalShelfPage />} />
+    <Route path="biblioteca/:bookId" element={<PhysicalBookDetailsPage />} />
+  </Route>
+</Routes>
+```
+
 ## Limitações conhecidas
 
 - **Leitura direta de MOBI:** o navegador valida e extrai metadados do MOBI, mas não converte nem renderiza o formato diretamente; é necessário converter para EPUB externamente (ex.: Calibre) e vincular o arquivo convertido no cadastro.
