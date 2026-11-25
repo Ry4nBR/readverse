@@ -1,10 +1,22 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import ReaderProgress from '../components/reader/ReaderProgress.jsx'
+import { useReaderActivity } from '../hooks/useReaderActivity.js'
 import ReaderShell from '../components/reader/ReaderShell.jsx'
 import styles from '../components/reader/Reader.module.css'
 import { openReaderFile } from '../services/readerFile.js'
 
 const EpubReader = lazy(() => import('../components/reader/EpubReader.jsx'))
+
+function OpenReader({ book, file, format }) {
+  const activity = useReaderActivity(book, format)
+  return <ReaderShell book={book}>
+    <Suspense fallback={<p role="status">Preparando leitor…</p>}>
+      <EpubReader file={file} book={book} onPosition={activity.onPosition} />
+    </Suspense>
+    <ReaderProgress {...activity} />
+  </ReaderShell>
+}
 
 function ReaderSession({ id }) {
   const [result, setResult] = useState(null)
@@ -22,11 +34,7 @@ function ReaderSession({ id }) {
     {result ? <p role="alert" className={styles.error}>{result.error}</p> : <p role="status">Buscando arquivo…</p>}
   </main>
 
-  return <ReaderShell book={result.book}>
-    <Suspense fallback={<p role="status">Preparando leitor…</p>}>
-      <EpubReader file={result.file} book={result.book} />
-    </Suspense>
-  </ReaderShell>
+  return <OpenReader {...result} />
 }
 
 export default function DigitalReaderPage() {

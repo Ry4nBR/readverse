@@ -46,4 +46,7 @@
 .shell button { cursor: pointer; }
 .shell button:disabled { opacity: .55; cursor: default; }
 
+.progress { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .75rem; }
+.progress progress { width: min(12rem, 100%); accent-color: var(--accent); }
+
 .error { color: var(--danger); }

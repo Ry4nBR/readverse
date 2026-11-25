@@ -11,12 +11,13 @@ function limitContent(contents) {
   contents.head.prepend(policy)
 }
 
-export default function EpubReader({ file }) {
+export default function EpubReader({ file, book, onPosition }) {
   const viewport = useRef(null)
   const rendition = useRef(null)
   const [location, setLocation] = useState(null)
   const [toc, setToc] = useState([])
   const [navigationError, setNavigationError] = useState(false)
+  const initialCfi = book.readerPosition?.format === 'epub' ? book.readerPosition.cfi : undefined
   const [state, setState] = useState('loading')
 
   useEffect(() => {
@@ -27,7 +28,8 @@ export default function EpubReader({ file }) {
       try {
         const bytes = await file.arrayBuffer()
         if (!active) return
-        publication = ePub(bytes, { replacements: 'blobUrl' })
+        publication = ePub(undefined, { replacements: 'blobUrl' })
+        await publication.open(bytes)
         await publication.opened
         if (!active) return
         publication.spine.hooks.content.register(limitContent)
@@ -35,14 +37,20 @@ export default function EpubReader({ file }) {
           width: '100%', height: '100%', flow: 'paginated', spread: 'none', allowScriptedContent: false,
         })
         rendition.current = renderer
-        renderer.on('displayError', () => { if (active) setNavigationError(true) })
+        renderer.on('displayError', () => {
+          if (active) {
+            setNavigationError(true)
+            setState((previous) => previous === 'loading' ? 'error' : previous)
+          }
+        })
         renderer.on('relocated', (current) => {
           if (active) setLocation(epubLocation(publication, current))
         })
         void publication.loaded.navigation.then((navigation) => {
           if (active) setToc(flattenToc(navigation.toc))
         }, () => {})
-        await renderer.display()
+        const target = initialCfi && publication.spine.get(initialCfi) ? initialCfi : undefined
+        await renderer.display(target)
         if (active) setState('ready')
       } catch {
         if (active) setState('error')
@@ -55,7 +63,11 @@ export default function EpubReader({ file }) {
       renderer?.destroy()
       publication?.destroy()
     }
-  }, [file])
+  }, [file, initialCfi])
+
+  useEffect(() => {
+    if (state === 'ready' && location) onPosition(location.cfi, location.percentage)
+  }, [location, onPosition, state])
 
   function navigate(action, target) {
     setNavigationError(false)
