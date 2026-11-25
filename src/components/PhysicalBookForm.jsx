@@ -27,8 +27,7 @@ export default function PhysicalBookForm({ initialBook = emptyBook, onSave, allo
   const busy = saving || checkingCover || searching
 
   function applyLookup(result) {
-    const available = Object.fromEntries(Object.entries(result).filter(([, value]) => value))
-    setBook((current) => ({ ...current, ...available, coverUrl: current.coverBlob ? '' : available.coverUrl ?? '' }))
+    setBook((current) => ({ ...current, ...result, coverUrl: current.coverBlob ? '' : result.coverUrl }))
     setError('')
   }
 

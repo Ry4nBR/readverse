@@ -23,7 +23,9 @@ export default function IsbnLookup({ onResult, onLoadingChange, disabled }) {
     onLoadingChange(true)
     setFeedback({ text: 'Pesquisando nos catálogos…' })
     try {
-      const existing = await findPhysicalBookByIsbn(isbn)
+      const existing = await findPhysicalBookByIsbn(isbn).catch(() => {
+        throw new Error('Não foi possível verificar a estante para pesquisar o ISBN. Tente novamente.')
+      })
       controller.signal.throwIfAborted()
       if (existing) {
         setFeedback({ error: true, text: 'Este ISBN já está cadastrado na estante.' })
@@ -39,8 +41,7 @@ export default function IsbnLookup({ onResult, onLoadingChange, disabled }) {
       }
     } catch (error) {
       if (!controller.signal.aborted) {
-        setFeedback({ error: true, text: error.message.startsWith('A pesquisa') ? error.message :
-          'Não foi possível verificar a estante para pesquisar o ISBN. Tente novamente.' })
+        setFeedback({ error: true, text: error.message })
       }
     } finally {
       pending.current = null
