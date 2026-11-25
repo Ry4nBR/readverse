@@ -1,0 +1,20 @@
+.shell {
+  min-height: 100vh;
+}
+
+.content {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 3rem;
+}
+
+.skipLink {
+  position: fixed;
+  z-index: 2;
+  inset: 1rem auto auto 1rem;
+  padding: .75rem 1rem;
+  background: var(--surface);
+  transform: translateY(-200%);
+}
+
+.skipLink:focus { transform: none; }
