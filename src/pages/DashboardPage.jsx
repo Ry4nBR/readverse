@@ -2,10 +2,11 @@ import { createElement } from 'react'
 import { BookMarked, BookOpen, CheckCircle2, LibraryBig, Tablet } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import AnnualReadingGoal from '../components/AnnualReadingGoal.jsx'
+import ReadingBarChart from '../components/ReadingBarChart.jsx'
 import DashboardBookList from '../components/DashboardBookList.jsx'
 import shared from '../components/PhysicalBook.module.css'
 import { useReadingCatalog } from '../hooks/useReadingCatalog.js'
-import { readingStats } from '../utils/readingStats.js'
+import { monthlyCompletions, readingStats } from '../utils/readingStats.js'
 import styles from './DashboardPage.module.css'
 
 const summary = [
@@ -16,8 +17,12 @@ const summary = [
   { label: 'Quero ler', icon: BookMarked, key: 'toRead' },
 ]
 
+const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+
 function DashboardStats({ books }) {
   const { counts, reading, finished, toRead, recent } = readingStats(books)
+  const year = new Date().getFullYear()
+  const monthly = monthlyCompletions(finished, year).map((value, index) => ({ key: index, label: months[index], value }))
   return <>
     <dl className={styles.summary} aria-label="Resumo da biblioteca">
       {summary.map(({ label, icon, key }) => (
@@ -27,12 +32,13 @@ function DashboardStats({ books }) {
         </div>
       ))}
     </dl>
-    <AnnualReadingGoal finished={finished} year={new Date().getFullYear()} />
+    <AnnualReadingGoal finished={finished} year={year} />
     <div className={styles.lists}>
       <DashboardBookList title="Livros em andamento" books={reading} empty="Nenhum livro marcado como “Lendo”." showProgress />
       <DashboardBookList title="Livros que quero ler" books={toRead} empty="Nenhum livro na lista de próximas leituras." />
       <DashboardBookList title="Últimos livros adicionados" books={recent.slice(0, 6)} empty="Sua biblioteca está vazia." />
     </div>
+    <ReadingBarChart title={'Livros lidos por mês · ' + year} items={monthly} empty="Nenhuma conclusão com data neste ano." />
   </>
 }
 

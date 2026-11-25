@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { annualProgress, readingStats } from '../src/utils/readingStats.js'
+import { annualProgress, monthlyCompletions, readingStats } from '../src/utils/readingStats.js'
 
 test('combina catálogos, ignora vínculo duplicado e ordena as inclusões pela data real', () => {
   const physical = { key: 'physical:1', kind: 'physical', status: 'reading', createdAt: 10 }
@@ -23,4 +23,5 @@ test('a meta anual usa uma conclusão datada por registro e aceita superar a met
   ])
   assert.deepEqual(annualProgress(stats.finished, 2026, 1), { completed: 2, remaining: 0, percentage: 200 })
   assert.deepEqual(annualProgress(stats.finished, 2026, 3), { completed: 2, remaining: 1, percentage: 66 })
+  assert.deepEqual(monthlyCompletions(stats.finished, 2026), [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
 })

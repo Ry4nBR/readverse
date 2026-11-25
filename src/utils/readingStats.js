@@ -6,6 +6,14 @@ export function completedInYear(finished, year) {
   )
 }
 
+export function monthlyCompletions(finished, year) {
+  const months = Array(12).fill(0)
+  for (const { activity } of completedInYear(finished, year)) {
+    months[Number(activity.completedDate.slice(5, 7)) - 1]++
+  }
+  return months
+}
+
 export function annualProgress(finished, year, goal) {
   const completed = completedInYear(finished, year).length
   return {
