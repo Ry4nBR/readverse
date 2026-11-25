@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DuplicateBookError } from '../services/physicalBooks.js'
 import { emptyBook, readingStatuses, validateBookForm } from '../utils/bookForm.js'
-import BookCover from './BookCover.jsx'
+import BookCoverField from './BookCoverField.jsx'
 import IsbnLookup from './IsbnLookup.jsx'
 import styles from './PhysicalBook.module.css'
 
@@ -14,13 +14,10 @@ const fields = [
   { name: 'year', label: 'Ano de publicação', inputMode: 'numeric', maxLength: 4 },
   { name: 'genre', label: 'Gênero' },
 ]
-const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-const coverSizeLimit = 5 * 1024 * 1024
 
 export default function PhysicalBookForm({ initialBook = emptyBook, onSave, allowLookup = false, cancelTo = '/biblioteca' }) {
   const [book, setBook] = useState(initialBook)
   const [error, setError] = useState('')
-  const [coverError, setCoverError] = useState('')
   const [checkingCover, setCheckingCover] = useState(false)
   const [saving, setSaving] = useState(false)
   const [searching, setSearching] = useState(false)
@@ -35,28 +32,6 @@ export default function PhysicalBookForm({ initialBook = emptyBook, onSave, allo
     const { name, value } = event.target
     setBook((current) => ({ ...current, [name]: value }))
     setError('')
-  }
-
-  async function uploadCover(event) {
-    const input = event.currentTarget
-    const file = input.files[0]
-    input.value = ''
-    if (!file) return
-    setCoverError('')
-    if (!imageTypes.includes(file.type) || file.size > coverSizeLimit) {
-      setCoverError('Escolha uma imagem JPEG, PNG, WebP ou GIF de até 5 MB.')
-      return
-    }
-    setCheckingCover(true)
-    try {
-      const bitmap = await createImageBitmap(file)
-      bitmap.close()
-      setBook((current) => ({ ...current, coverBlob: file, coverUrl: '' }))
-    } catch {
-      setCoverError('O arquivo selecionado não pôde ser aberto como imagem.')
-    } finally {
-      setCheckingCover(false)
-    }
   }
 
   async function submit(event) {
@@ -107,22 +82,12 @@ export default function PhysicalBookForm({ initialBook = emptyBook, onSave, allo
             <textarea name="description" value={book.description} onChange={update} rows={4} />
           </label>
         </div>
-        <div className={styles.coverField}>
-          <BookCover coverBlob={book.coverBlob} coverUrl={book.coverUrl} />
-          <div>
-            <label>
-              Capa personalizada
-              <input type="file" accept={imageTypes.join(',')} onChange={uploadCover} />
-            </label>
-            {(book.coverBlob || book.coverUrl) && (
-              <button type="button" className={styles.secondary} onClick={() => {
-                setCoverError('')
-                setBook((current) => ({ ...current, coverBlob: null, coverUrl: '' }))
-              }}>Remover capa</button>
-            )}
-          </div>
-        </div>
-        {coverError && <p role="alert" className={styles.error}>{coverError}</p>}
+        <BookCoverField
+          coverBlob={book.coverBlob}
+          coverUrl={book.coverUrl}
+          onBusyChange={setCheckingCover}
+          onChange={(coverBlob) => setBook((current) => ({ ...current, coverBlob, coverUrl: '' }))}
+        />
       </fieldset>
       {error && <p role="alert" className={styles.error}>{error}</p>}
       <div className={styles.actions}>
