@@ -1,0 +1,11 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  min-height: 4.25rem;
+  padding: .75rem 3rem;
+  color: var(--accent);
+  font-weight: 650;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
