@@ -69,7 +69,6 @@ export default function EpubReader({ file, book, onPosition }) {
     return () => {
       active = false
       rendition.current = null
-      renderer?.destroy()
       publication?.destroy()
     }
   }, [file, initialCfi])
