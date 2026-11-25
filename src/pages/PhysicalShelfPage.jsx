@@ -5,9 +5,7 @@ import styles from '../components/PhysicalBook.module.css'
 import { usePhysicalBooks } from '../hooks/usePhysicalBooks.js'
 import { readingStatuses } from '../utils/bookForm.js'
 
-function searchKey(value) {
-  return value.trim().toLocaleLowerCase('pt-BR').normalize('NFD').replace(/\p{M}/gu, '')
-}
+import { searchKey } from '../utils/librarySearch.js'
 
 export default function PhysicalShelfPage() {
   const { state } = useLocation()
