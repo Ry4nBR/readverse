@@ -1,0 +1,75 @@
+.shell {
+  width: min(100%, 78rem);
+  min-height: 100dvh;
+  margin-inline: auto;
+  padding: clamp(.75rem, 2vw, 1.5rem);
+  display: grid;
+  align-content: start;
+  gap: .75rem;
+  background: var(--canvas);
+  color: var(--text);
+}
+
+.shell:fullscreen, .shell[data-expanded='true'] { width: 100%; max-width: none; overflow: auto; }
+.shell[data-expanded='true'] { position: fixed; inset: 0; z-index: 5; }
+
+.header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
+.header h1 { font: 700 clamp(1.25rem, 3vw, 1.75rem) var(--serif); overflow-wrap: anywhere; min-width: 0; }
+
+.epub {
+  height: max(20rem, 72dvh);
+  min-width: 0;
+  overflow: hidden;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+}
+
+.pdf {
+  overflow: auto;
+  max-height: 78dvh;
+  min-height: 12rem;
+  min-width: 0;
+  padding: .5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+}
+
+.pdf canvas { display: block; }
+.pdf :global(.react-pdf__Page) { width: max-content; margin-inline: auto; }
+.rendering { margin: .5rem 0 0; }
+
+.epub iframe { display: block; max-width: 100%; }
+.toolbar, .controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem .75rem;
+}
+
+.toolbar { padding: .75rem; border: 1px solid var(--border); border-radius: .75rem; background: var(--surface); }
+.toolbar label { display: grid; gap: .25rem; min-width: 0; max-width: 100%; }
+.toolbar select { width: 100%; min-width: 0; }
+.controls span { font-size: .875rem; }
+
+.shell button, .shell select, .shell input {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--control-border);
+  padding: .375rem .625rem;
+  border-radius: .5rem;
+}
+.shell button { cursor: pointer; }
+.shell button:disabled { opacity: .55; cursor: default; }
+
+.settings summary { cursor: pointer; width: fit-content; padding: .375rem; font-weight: 650; }
+.settings[open] summary { margin-bottom: .375rem; }
+
+.bookmarks { display: grid; gap: .5rem; padding-inline-start: 1.25rem; overflow-wrap: anywhere; }
+
+.progress { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .75rem; }
+.progress progress { width: min(12rem, 100%); accent-color: var(--accent); }
+
+.error { color: var(--danger); }

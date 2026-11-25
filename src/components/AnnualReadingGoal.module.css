@@ -1,0 +1,3 @@
+.goalForm { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; }
+.goalForm label { width: min(12rem, 100%); }
+.progress { width: 100%; accent-color: var(--accent); }

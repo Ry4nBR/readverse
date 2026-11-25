@@ -1,0 +1,8 @@
+.progress {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .25rem .75rem;
+  color: var(--muted);
+}
+
+.progress progress { width: 100%; grid-column: 1 / -1; accent-color: var(--accent); }

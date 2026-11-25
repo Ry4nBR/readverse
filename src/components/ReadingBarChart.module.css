@@ -1,0 +1,5 @@
+.chart { display: grid; gap: .6rem; padding: 0; margin: 0; list-style: none; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .15rem .5rem; }
+.row span { overflow-wrap: anywhere; }
+.track { grid-column: 1 / -1; height: .45rem; border-radius: 1rem; background: var(--accent-light); overflow: hidden; }
+.bar { height: 100%; border-radius: inherit; background: var(--accent); }

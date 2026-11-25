@@ -1,0 +1,4 @@
+.status { width: 100%; min-width: 0; }
+.status label { font-size: .8125rem; }
+.status select { padding-inline: .375rem; font-size: .875rem; }
+.status p { color: var(--danger); font-size: .8125rem; }

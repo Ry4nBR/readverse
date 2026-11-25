@@ -1,0 +1,22 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  min-height: 4.25rem;
+  padding: .75rem 3rem;
+  color: var(--accent);
+  font-weight: 650;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 56rem) {
+  .header {
+    min-height: 3rem;
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .header { padding-inline: 1rem; }
+}

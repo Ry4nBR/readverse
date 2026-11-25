@@ -1,0 +1,32 @@
+.shell {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.content {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 3rem;
+}
+
+.skipLink {
+  position: fixed;
+  z-index: 2;
+  inset: 1rem auto auto 1rem;
+  padding: .75rem 1rem;
+  background: var(--surface);
+  transform: translateY(-200%);
+}
+
+.skipLink:focus { transform: none; }
+
+@media (max-width: 56rem) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .content { padding: 2rem 1.5rem; }
+}
+
+@media (max-width: 30rem) {
+  .content { padding: 1.25rem 1rem; }
+}
