@@ -13,10 +13,11 @@ import NewPhysicalBookPage from '../pages/NewPhysicalBookPage.jsx'
 import NotFoundPage from '../pages/NotFoundPage.jsx'
 import PhysicalBookDetailsPage from '../pages/PhysicalBookDetailsPage.jsx'
 import PhysicalShelfPage from '../pages/PhysicalShelfPage.jsx'
+import ReadingHistoryPage from '../pages/ReadingHistoryPage.jsx'
 import SectionPage from '../pages/SectionPage.jsx'
 import { sections } from './sections.js'
 
-const futureSections = sections.filter(({ to }) => !['/cadastro', '/biblioteca', '/biblioteca-digital', '/importacao', '/estantes', '/aparencia'].includes(to))
+const futureSections = sections.filter(({ to }) => !['/cadastro', '/biblioteca', '/biblioteca-digital', '/importacao', '/estantes', '/aparencia', '/leituras'].includes(to))
 
 export default function AppRoutes() {
   return (
@@ -32,6 +33,7 @@ export default function AppRoutes() {
         <Route path="importacao" element={<DigitalImportPage />} />
         <Route path="aparencia" element={<AppearancePage />} />
         <Route path="estantes" element={<CustomShelvesPage />} />
+        <Route path="leituras" element={<ReadingHistoryPage />} />
         <Route path="cadastro" element={<NewPhysicalBookPage />} />
         {futureSections.map(({ to, label }) => (
           <Route key={to} path={to} element={<SectionPage title={label} />} />

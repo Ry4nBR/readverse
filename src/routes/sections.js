@@ -7,5 +7,5 @@ export const sections = [
   { to: '/importacao', label: 'Importar arquivo', icon: Import },
   { to: '/estantes', label: 'Estantes', icon: LibraryBig },
   { to: '/aparencia', label: 'Aparência', icon: Palette },
-  { to: '/leituras', label: 'Leituras', icon: BookOpen },
+  { to: '/leituras', label: 'Histórico de leitura', icon: BookOpen },
 ]

@@ -53,6 +53,10 @@ export default function DashboardPage() {
           <BookOpen size={22} aria-hidden="true" />
           Estante digital
         </Link>
+        <Link to="/leituras" className={styles.library}>
+          <CheckCircle2 size={22} aria-hidden="true" />
+          Histórico de leitura
+        </Link>
       </nav>
       {error ? <section className={styles.listPanel}>
         <p role="alert">Não foi possível carregar o resumo da biblioteca.</p>
