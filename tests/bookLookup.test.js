@@ -40,6 +40,25 @@ test('consulta a Open Library diante de um resultado incompatível ou falha', as
   }
 })
 
+test('complementa a descrição pela edição e obra sem perder o resultado se a consulta adicional falhar', async (context) => {
+  const catalog = { ['ISBN:' + isbn]: { title: 'Edição localizada', key: '/books/OL123M' } }
+  const fetch = context.mock.method(globalThis, 'fetch', async (url) => {
+    if (url.hostname === 'www.googleapis.com') return Response.json({ totalItems: 0 })
+    if (url.pathname === '/api/books') return Response.json(catalog)
+    if (url.pathname === '/books/OL123M.json') return Response.json({ works: [{ key: '/works/OL789W' }] })
+    return Response.json({ description: { value: 'Descrição da obra' } })
+  })
+  assert.equal((await lookupBook(isbn)).description, 'Descrição da obra')
+  fetch.mock.mockImplementation(async (url) => {
+    if (url.hostname === 'www.googleapis.com') return Response.json({ totalItems: 0 })
+    if (url.pathname === '/api/books') return Response.json(catalog)
+    return new Response(null, { status: 503 })
+  })
+  assert.deepEqual(await lookupBook(isbn), {
+    title: 'Edição localizada', author: '', publisher: '', year: '', isbn, description: '', coverUrl: '',
+  })
+})
+
 test('diferencia pesquisa sem resultados de falha e rejeita ISBN inválido', async (context) => {
   const fetch = context.mock.method(globalThis, 'fetch', async (url) =>
     Response.json(url.hostname === 'www.googleapis.com' ? { totalItems: 0 } : {}))

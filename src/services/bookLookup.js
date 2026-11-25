@@ -15,8 +15,8 @@ function coverUrl(value) {
   }
 }
 
-async function requestJson(url, signal) {
-  const timeout = AbortSignal.timeout(8000)
+async function requestJson(url, signal, timeoutMs = 8000) {
+  const timeout = AbortSignal.timeout(timeoutMs)
   const response = await fetch(url, { signal: signal ? AbortSignal.any([signal, timeout]) : timeout })
   if (!response.ok) throw new Error('O catálogo respondeu com HTTP ' + response.status)
   const data = await response.json()
@@ -49,6 +49,27 @@ async function googleBook(isbn, signal) {
   }
 }
 
+function descriptionOf(record) {
+  return text(record?.description) || text(record?.description?.value)
+}
+
+async function openLibraryDescription(book, signal) {
+  const description = descriptionOf(book)
+  if (description || !/^\/books\/OL\d+M$/.test(text(book.key))) return description
+
+  try {
+    const edition = await requestJson(new URL(book.key + '.json', 'https://openlibrary.org'), signal, 3000)
+    const editionDescription = descriptionOf(edition)
+    const workKey = text(edition.works?.[0]?.key)
+    if (editionDescription || !/^\/works\/OL\d+W$/.test(workKey)) return editionDescription
+    const work = await requestJson(new URL(workKey + '.json', 'https://openlibrary.org'), signal, 3000)
+    return descriptionOf(work)
+  } catch {
+    signal?.throwIfAborted()
+    return ''
+  }
+}
+
 async function openLibraryBook(isbn, signal) {
   const url = new URL('https://openlibrary.org/api/books')
   const bibkey = 'ISBN:' + isbn
@@ -58,7 +79,7 @@ async function openLibraryBook(isbn, signal) {
   if (!text(book?.title)) return null
   return {
     title: text(book.title), author: namedEntries(book.authors), publisher: namedEntries(book.publishers),
-    year: year(book.publish_date), isbn, description: text(book.description) || text(book.description?.value),
+    year: year(book.publish_date), isbn, description: await openLibraryDescription(book, signal),
     coverUrl: coverUrl(book.cover?.large) || coverUrl(book.cover?.medium) || coverUrl(book.cover?.small),
   }
 }
