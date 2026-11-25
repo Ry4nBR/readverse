@@ -36,6 +36,15 @@ A importação verifica a extensão, o tipo informado pelo navegador quando é e
 
 Os livros digitais ficam em um banco IndexedDB separado da estante física. A gravação reúne os dados, a capa e o arquivo original em uma transação. Para recuperar a estante após reiniciar, use o mesmo perfil do navegador e a mesma origem, incluindo a porta. A disponibilidade depende da cota e das políticas do navegador. Limpar dados do site ou encerrar uma sessão privada pode remover os arquivos. Use **Baixar original** se precisar manter uma cópia fora do navegador.
 
+## Estantes personalizadas e aparência
+
+- Em **Estantes**, crie uma coleção com nome, descrição e cor. Use **Subir** ou **Descer** para mudar sua posição. Excluir uma estante libera seus vínculos e preserva os livros nas bibliotecas de origem.
+- Em **Organizar livros**, selecione um livro físico ou digital e a estante de destino. Cada livro pertence a uma estante personalizada por vez. Escolha **Sem estante personalizada** para retirar o vínculo. Os rótulos **Físico**, **PDF**, **EPUB** e **MOBI** identificam os itens.
+- Use **Modo de exibição** para alternar entre **Prateleiras visuais** e **Grade de capas**. A escolha vale para as estantes física, digital e personalizadas.
+- Em **Aparência**, selecione o tema claro, escuro ou sépia, personalize a cor de destaque, ajuste a densidade das capas e escolha se os autores aparecem nas estantes. A cor de destaque pode ser ajustada visualmente para manter o contraste no tema escolhido.
+
+As estantes, sua ordem e os vínculos são gravados no IndexedDB. As preferências de aparência ficam no armazenamento local do navegador. Ambos são acessados por serviços próprios, com dados separados dos cadastros e arquivos. As preferências e estantes podem ser recuperadas no mesmo perfil e endereço da aplicação.
+
 ## Verificar o projeto
 
 ```sh
@@ -57,4 +66,4 @@ O build é gerado em `dist/`. Em uma hospedagem estática, configure o redirecio
 - `src/services/` integra os catálogos, analisa arquivos digitais e gerencia a persistência.
 - `src/hooks/` carrega os livros para as telas.
 - `src/utils/` reúne a validação de ISBN e os dados do formulário.
-- `tests/` cobre a validação de ISBN, os catálogos, a validação de arquivos digitais e a persistência no IndexedDB.
+- `tests/` cobre a validação de ISBN, os catálogos, a validação de arquivos digitais, a persistência no IndexedDB e as preferências de aparência.
