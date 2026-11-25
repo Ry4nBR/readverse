@@ -1,4 +1,5 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
+import DeletePhysicalBook from '../components/DeletePhysicalBook.jsx'
 import BookCover from '../components/BookCover.jsx'
 import PhysicalBookRecord from '../components/PhysicalBookRecord.jsx'
 import styles from '../components/PhysicalBook.module.css'
@@ -34,6 +35,7 @@ function BookDetails({ book }) {
         </section>}
         <div className={styles.actions}>
           <Link className={styles.secondary} to="editar">Editar livro</Link>
+          <DeletePhysicalBook key={book.id} book={book} />
         </div>
       </article>
     </section>

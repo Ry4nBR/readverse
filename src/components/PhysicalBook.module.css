@@ -75,7 +75,7 @@
 
 .cover img { width: 100%; height: 100%; object-fit: contain; }
 
-.primary, .secondary {
+.primary, .secondary, .danger {
   display: inline-block;
   font: inherit;
   font-weight: 650;
@@ -147,3 +147,21 @@
 .metadata dt { color: var(--muted); }
 .metadata dd { margin: 0; overflow-wrap: anywhere; }
 .description { margin-top: .375rem; white-space: pre-wrap; }
+
+.danger {
+  border-color: #8e2723;
+  background: var(--surface);
+  color: #8e2723;
+}
+
+.dialog {
+  width: min(26rem, calc(100% - 2rem));
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: inherit;
+}
+
+.dialog p { margin-block: .75rem 1rem; }
+.dialog::backdrop { background: rgb(41 37 30 / .5); }
