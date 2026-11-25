@@ -1,3 +1,6 @@
+import { applyReading, ReadingError } from '../utils/reading.js'
+import { publishBookChange } from './bookChanges.js'
+
 const databaseName = 'bookshelf-digital'
 const bookStore = 'books'
 const fileStore = 'files'
@@ -47,7 +50,7 @@ async function transact(stores, mode, operation) {
       }
     })
   } catch (error) {
-    if (error instanceof DigitalStorageError) throw error
+    if (error instanceof DigitalStorageError || error instanceof ReadingError) throw error
     if (error?.name === 'ConstraintError') throw new DuplicateDigitalBookError()
     if (error?.name === 'QuotaExceededError') {
       throw new DigitalStorageError('O navegador ficou sem espaço para armazenar este livro.', { cause: error })
@@ -78,6 +81,7 @@ export function saveDigitalBook(draft, metadata) {
   const { file, hash, format } = draft
   const book = {
     ...editableFields(metadata),
+    ...applyReading(null, { status: metadata.status ?? 'toRead' }),
     id: globalThis.crypto.randomUUID(),
     importedAt: Date.now(),
     fileName: file.name,
@@ -89,7 +93,7 @@ export function saveDigitalBook(draft, metadata) {
     transaction.objectStore(bookStore).add(book)
     transaction.objectStore(fileStore).add(file, book.id)
     done(book)
-  })
+  }).then(publishBookChange)
 }
 
 export function updateDigitalBook(id, metadata) {
@@ -98,16 +102,39 @@ export function updateDigitalBook(id, metadata) {
     const request = store.get(id)
     request.onsuccess = () => {
       if (!request.result) return fail(new DigitalStorageError('Este livro já foi removido da estante.'))
-      const book = { ...request.result, ...editableFields(metadata) }
-      store.put(book)
-      done(book)
+      const previous = request.result
+      try {
+        const book = { ...previous, ...editableFields(metadata), ...applyReading(previous, { status: metadata.status ?? previous.status }) }
+        store.put(book)
+        done(book)
+      } catch (error) {
+        fail(error)
+      }
     }
-  })
+  }).then(publishBookChange)
+}
+
+export function updateDigitalReading(id, changes) {
+  return transact([bookStore], 'readwrite', (transaction, done, fail) => {
+    const store = transaction.objectStore(bookStore)
+    const request = store.get(id)
+    request.onsuccess = () => {
+      const book = request.result
+      if (!book) return fail(new DigitalStorageError('O livro digital não está mais na biblioteca.'))
+      try {
+        const updated = { ...book, ...applyReading(book, changes) }
+        store.put(updated)
+        done(updated)
+      } catch (error) {
+        fail(error)
+      }
+    }
+  }).then(publishBookChange)
 }
 
 export function deleteDigitalBook(id) {
   return transact([bookStore, fileStore], 'readwrite', (transaction) => {
     transaction.objectStore(bookStore).delete(id)
     transaction.objectStore(fileStore).delete(id)
-  })
+  }).then(publishBookChange)
 }

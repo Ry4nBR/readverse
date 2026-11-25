@@ -1,3 +1,5 @@
+import { applyReading } from '../utils/reading.js'
+import { publishBookChange } from './bookChanges.js'
 import { isbnKey, normalizeIsbn } from '../utils/isbn.js'
 
 const databaseName = 'bookshelf'
@@ -62,10 +64,27 @@ export function findPhysicalBookByIsbn(isbn) {
 }
 
 export function deletePhysicalBook(id) {
-  return transact('readwrite', (store) => store.delete(id))
+  return transact('readwrite', (store) => store.delete(id)).then(publishBookChange)
 }
 
 const comparable = (text) => text.trim().normalize('NFC').toLocaleLowerCase('pt-BR').replace(/\s+/g, ' ')
+
+export function updatePhysicalReading(id, changes) {
+  return transact('readwrite', (store, done, fail) => {
+    const request = store.get(id)
+    request.onsuccess = () => {
+      const book = request.result
+      if (!book) return fail(new Error('O livro físico não está mais na biblioteca.'))
+      try {
+        const updated = { ...book, ...applyReading(book, changes) }
+        store.put(updated)
+        done(updated)
+      } catch (error) {
+        fail(error)
+      }
+    }
+  }).then(publishBookChange)
+}
 
 export class DuplicateBookError extends Error {}
 
@@ -88,12 +107,18 @@ export function savePhysicalBook(book, id) {
         comparable(entry.author) === comparable(book.author))) {
         return fail(new DuplicateBookError('Já existe um livro com o mesmo título e autor na estante.'))
       }
+      let reading
+      try {
+        reading = applyReading(previous, { status: book.status ?? previous?.status ?? 'toRead' })
+      } catch (error) {
+        return fail(error)
+      }
       const saved = {
-        ...book, isbn, isbnKey: key, id: id ?? crypto.randomUUID(),
+        ...book, ...reading, isbn, isbnKey: key, id: id ?? crypto.randomUUID(),
         createdAt: previous?.createdAt ?? Date.now(),
       }
       store.put(saved)
       done(saved)
     }
-  })
+  }).then(publishBookChange)
 }
