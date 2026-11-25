@@ -1,7 +1,7 @@
 import { useId, useRef, useState } from 'react'
 import styles from './PhysicalBook.module.css'
 
-export default function DeleteBookDialog({ title, description, onDelete }) {
+export default function DeleteBookDialog({ title, description, onDelete, disabled, action = 'Excluir livro', question = 'Excluir livro?', failure = 'Não foi possível excluir o livro. Tente novamente.' }) {
   const dialog = useRef(null)
   const titleId = useId()
   const [deleting, setDeleting] = useState(false)
@@ -13,21 +13,23 @@ export default function DeleteBookDialog({ title, description, onDelete }) {
     setError('')
     try {
       await onDelete()
+      dialog.current?.close()
+      setDeleting(false)
     } catch {
-      setError('Não foi possível excluir o livro. Tente novamente.')
+      setError(failure)
       setDeleting(false)
     }
   }
 
   return (
     <>
-      <button type="button" className={styles.danger} onClick={() => {
+      <button type="button" className={styles.danger} disabled={disabled} onClick={() => {
         setError('')
         dialog.current.showModal()
-      }}>Excluir livro</button>
+      }}>{action}</button>
       <dialog ref={dialog} className={styles.dialog} aria-labelledby={titleId}
         onCancel={(event) => { if (deleting) event.preventDefault() }}>
-        <h2 id={titleId}>Excluir livro?</h2>
+        <h2 id={titleId}>{question}</h2>
         <p>“{title}” {description}</p>
         {error && <p role="alert" className={styles.error}>{error}</p>}
         <div className={styles.actions}>

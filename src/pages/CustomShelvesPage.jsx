@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
+import DeleteBookDialog from '../components/DeleteBookDialog.jsx'
 import ShelfForm from '../components/ShelfForm.jsx'
 import shared from '../components/PhysicalBook.module.css'
 import styles from './CustomShelvesPage.module.css'
-import { createShelf, listShelves, ShelfError, updateShelf } from '../services/customShelves.js'
+import { createShelf, deleteShelf, listShelves, ShelfError, updateShelf } from '../services/customShelves.js'
 
 export default function CustomShelvesPage() {
   const [shelves, setShelves] = useState(null)
@@ -44,6 +45,13 @@ export default function CustomShelvesPage() {
     if (saved) setEditing(null)
   }
 
+  async function remove(id) {
+    setShelves(await deleteShelf(id))
+    if (editing?.id === id) setEditing(null)
+    setError('')
+    setNotice('Estante excluída. Os livros continuam nas bibliotecas.')
+  }
+
   return (
     <section className={shared.page}>
       <header className={shared.pageHeader}>
@@ -69,6 +77,9 @@ export default function CustomShelvesPage() {
                 <div className={shared.actions}>
                   <button type="button" className={shared.secondary} disabled={busy}
                     onClick={() => { setError(''); setEditing(shelf) }}>Editar estante</button>
+                  <DeleteBookDialog title={shelf.name} action="Excluir estante" question="Excluir estante?" disabled={busy}
+                    description="será excluída. Os livros continuam nas bibliotecas."
+                    failure="Não foi possível excluir a estante. Tente novamente." onDelete={() => remove(shelf.id)} />
                 </div>
               </div>
             </li>
