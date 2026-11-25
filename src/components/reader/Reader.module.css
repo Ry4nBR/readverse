@@ -10,6 +10,9 @@
   color: var(--text);
 }
 
+.shell:fullscreen, .shell[data-expanded='true'] { width: 100%; max-width: none; overflow: auto; }
+.shell[data-expanded='true'] { position: fixed; inset: 0; z-index: 5; }
+
 .header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
 .header h1 { font: 700 clamp(1.25rem, 3vw, 1.75rem) var(--serif); overflow-wrap: anywhere; min-width: 0; }
 
