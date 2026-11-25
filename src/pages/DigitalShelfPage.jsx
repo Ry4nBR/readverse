@@ -98,7 +98,7 @@ export default function DigitalShelfPage() {
                   <BookCover coverBlob={book.coverBlob} />
                   <div className={shared.cardInfo}>
                     <span className={styles.format}>{book.format.toUpperCase()}</span>
-                    <h2>{book.title}</h2>
+                    <h2><Link to={'/biblioteca-digital/' + book.id}>{book.title}</Link></h2>
                     <p>{book.author}</p>
                     <p className={shared.cardMeta}>{readingStatuses[book.status]}{book.genre && ' · ' + book.genre}</p>
                   </div>
