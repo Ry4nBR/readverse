@@ -1,0 +1,21 @@
+.shelves {
+  display: grid;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.shelves > li { border-inline-start: .375rem solid var(--shelf-color); }
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  flex-wrap: wrap;
+  gap: .75rem 1.25rem;
+}
+
+.heading > div { min-width: 0; }
+.heading h2 { font: 700 1.5rem var(--serif); overflow-wrap: anywhere; }
+.heading p { color: var(--muted); white-space: pre-wrap; }

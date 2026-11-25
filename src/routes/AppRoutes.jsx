@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import LibraryLayout from '../layouts/LibraryLayout.jsx'
+import CustomShelvesPage from '../pages/CustomShelvesPage.jsx'
 import DashboardPage from '../pages/DashboardPage.jsx'
 
 import DigitalBookDetailsPage from '../pages/DigitalBookDetailsPage.jsx'
@@ -14,7 +15,7 @@ import PhysicalShelfPage from '../pages/PhysicalShelfPage.jsx'
 import SectionPage from '../pages/SectionPage.jsx'
 import { sections } from './sections.js'
 
-const futureSections = sections.filter(({ to }) => !['/cadastro', '/biblioteca', '/biblioteca-digital', '/importacao'].includes(to))
+const futureSections = sections.filter(({ to }) => !['/cadastro', '/biblioteca', '/biblioteca-digital', '/importacao', '/estantes'].includes(to))
 
 export default function AppRoutes() {
   return (
@@ -28,6 +29,7 @@ export default function AppRoutes() {
         <Route path="biblioteca-digital/:bookId" element={<DigitalBookDetailsPage />} />
         <Route path="biblioteca-digital/:bookId/editar" element={<EditDigitalBookPage />} />
         <Route path="importacao" element={<DigitalImportPage />} />
+        <Route path="estantes" element={<CustomShelvesPage />} />
         <Route path="cadastro" element={<NewPhysicalBookPage />} />
         {futureSections.map(({ to, label }) => (
           <Route key={to} path={to} element={<SectionPage title={label} />} />
