@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { annualProgress, monthlyCompletions, readingStats } from '../src/utils/readingStats.js'
+import { annualProgress, genresOf, monthlyCompletions, readingStats } from '../src/utils/readingStats.js'
 
 test('combina catálogos, ignora vínculo duplicado e ordena as inclusões pela data real', () => {
   const physical = { key: 'physical:1', kind: 'physical', status: 'reading', createdAt: 10 }
@@ -10,6 +10,15 @@ test('combina catálogos, ignora vínculo duplicado e ordena as inclusões pela 
   assert.deepEqual(stats.counts, { physical: 2, digital: 1, finished: 1, reading: 1, toRead: 1 })
   assert.deepEqual(stats.recent.map((book) => book.key), [digital.key, physical.key, queued.key])
   assert.equal(stats.finished[0].activity.completedDate, '')
+  assert.deepEqual(genresOf(stats.books), [{ key: 'unclassified', label: 'Sem gênero', value: 3 }])
+})
+
+test('a distribuição agrupa grafias equivalentes e inclui livros sem gênero', () => {
+  const items = genresOf([{ genre: 'Ficção' }, { genre: ' ficcao ' }, { genre: '' }, { genre: 'História' }])
+  assert.equal(items[0].label, 'Ficção')
+  assert.equal(items[0].value, 2)
+  assert.ok(items.some((item) => item.key === 'unclassified' && item.value === 1))
+  assert.equal(items.reduce((total, item) => total + item.value, 0), 4)
 })
 
 test('a meta anual usa uma conclusão datada por registro e aceita superar a meta', () => {

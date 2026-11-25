@@ -42,11 +42,13 @@
 .listPanel h2 { font: 700 1.5rem var(--serif); }
 .listPanel p { color: var(--muted); }
 
-.lists {
+.lists, .charts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
   gap: 1rem;
 }
+
+.charts > section { align-content: start; }
 
 .libraries {
   display: grid;

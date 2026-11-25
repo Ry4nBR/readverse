@@ -1,3 +1,4 @@
+import { searchKey } from './librarySearch.js'
 import { readingOf, validReadingDate } from './reading.js'
 
 export function completedInYear(finished, year) {
@@ -20,6 +21,18 @@ export function annualProgress(finished, year, goal) {
     completed, remaining: goal === null ? null : Math.max(0, goal - completed),
     percentage: goal === null ? null : Math.floor(completed / goal * 100),
   }
+}
+
+export function genresOf(books) {
+  const genres = new Map()
+  for (const book of books) {
+    const label = book.genre?.trim()
+    const key = label ? 'genre:' + searchKey(label) : 'unclassified'
+    const entry = genres.get(key) ?? { key, label: label || 'Sem gênero', value: 0 }
+    entry.value++
+    genres.set(key, entry)
+  }
+  return [...genres.values()].sort((a, b) => b.value - a.value || a.label.localeCompare(b.label, 'pt-BR'))
 }
 
 export function readingStats(catalog) {

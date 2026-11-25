@@ -6,7 +6,7 @@ import ReadingBarChart from '../components/ReadingBarChart.jsx'
 import DashboardBookList from '../components/DashboardBookList.jsx'
 import shared from '../components/PhysicalBook.module.css'
 import { useReadingCatalog } from '../hooks/useReadingCatalog.js'
-import { monthlyCompletions, readingStats } from '../utils/readingStats.js'
+import { genresOf, monthlyCompletions, readingStats } from '../utils/readingStats.js'
 import styles from './DashboardPage.module.css'
 
 const summary = [
@@ -20,9 +20,12 @@ const summary = [
 const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
 function DashboardStats({ books }) {
-  const { counts, reading, finished, toRead, recent } = readingStats(books)
+  const stats = readingStats(books)
+  const { counts, reading, finished, toRead, recent } = stats
   const year = new Date().getFullYear()
   const monthly = monthlyCompletions(finished, year).map((value, index) => ({ key: index, label: months[index], value }))
+  const formats = [{ key: 'physical', label: 'Físicos', value: counts.physical },
+    { key: 'digital', label: 'Digitais', value: counts.digital }]
   return <>
     <dl className={styles.summary} aria-label="Resumo da biblioteca">
       {summary.map(({ label, icon, key }) => (
@@ -38,7 +41,11 @@ function DashboardStats({ books }) {
       <DashboardBookList title="Livros que quero ler" books={toRead} empty="Nenhum livro na lista de próximas leituras." />
       <DashboardBookList title="Últimos livros adicionados" books={recent.slice(0, 6)} empty="Sua biblioteca está vazia." />
     </div>
-    <ReadingBarChart title={'Livros lidos por mês · ' + year} items={monthly} empty="Nenhuma conclusão com data neste ano." />
+    <div className={styles.charts}>
+      <ReadingBarChart title={'Livros lidos por mês · ' + year} items={monthly} empty="Nenhuma conclusão com data neste ano." />
+      <ReadingBarChart title="Distribuição por gênero" items={genresOf(stats.books)} empty="Sua biblioteca está vazia." />
+      <ReadingBarChart title="Livros físicos e digitais" items={formats} empty="Sua biblioteca está vazia." />
+    </div>
   </>
 }
 
