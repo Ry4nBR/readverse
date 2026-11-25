@@ -1,4 +1,18 @@
-import { readingOf } from './reading.js'
+import { readingOf, validReadingDate } from './reading.js'
+
+export function completedInYear(finished, year) {
+  return finished.filter(({ activity: { completedDate } }) =>
+    validReadingDate(completedDate) && Number(completedDate.slice(0, 4)) === year,
+  )
+}
+
+export function annualProgress(finished, year, goal) {
+  const completed = completedInYear(finished, year).length
+  return {
+    completed, remaining: goal === null ? null : Math.max(0, goal - completed),
+    percentage: goal === null ? null : Math.floor(completed / goal * 100),
+  }
+}
 
 export function readingStats(catalog) {
   const books = [...new Map(catalog.map((book) => [book.key, book])).values()]

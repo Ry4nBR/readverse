@@ -1,6 +1,7 @@
 import { createElement } from 'react'
 import { BookMarked, BookOpen, CheckCircle2, LibraryBig, Tablet } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import AnnualReadingGoal from '../components/AnnualReadingGoal.jsx'
 import DashboardBookList from '../components/DashboardBookList.jsx'
 import shared from '../components/PhysicalBook.module.css'
 import { useReadingCatalog } from '../hooks/useReadingCatalog.js'
@@ -16,7 +17,7 @@ const summary = [
 ]
 
 function DashboardStats({ books }) {
-  const { counts, reading, toRead, recent } = readingStats(books)
+  const { counts, reading, finished, toRead, recent } = readingStats(books)
   return <>
     <dl className={styles.summary} aria-label="Resumo da biblioteca">
       {summary.map(({ label, icon, key }) => (
@@ -26,6 +27,7 @@ function DashboardStats({ books }) {
         </div>
       ))}
     </dl>
+    <AnnualReadingGoal finished={finished} year={new Date().getFullYear()} />
     <div className={styles.lists}>
       <DashboardBookList title="Livros em andamento" books={reading} empty="Nenhum livro marcado como “Lendo”." showProgress />
       <DashboardBookList title="Livros que quero ler" books={toRead} empty="Nenhum livro na lista de próximas leituras." />
@@ -37,7 +39,7 @@ function DashboardStats({ books }) {
 export default function DashboardPage() {
   const { books, error, retry } = useReadingCatalog()
   return (
-    <div className={styles.dashboard}>
+    <div className={styles.dashboard + ' ' + shared.page}>
       <header className={styles.intro}>
         <h1>Visão geral</h1>
         <p>Organize seus livros e acompanhe suas leituras.</p>
