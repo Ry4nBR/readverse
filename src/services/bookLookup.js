@@ -26,9 +26,10 @@ async function requestJson(url, signal, timeoutMs = 8000) {
   return data
 }
 
-async function googleBook(isbn, signal) {
+async function googleBook(isbn, signal, language) {
   const url = new URL('https://www.googleapis.com/books/v1/volumes')
   url.searchParams.set('q', 'isbn:' + isbn)
+  if (language) url.searchParams.set('langRestrict', language)
   const key = import.meta.env?.VITE_GOOGLE_BOOKS_API_KEY?.trim()
   if (key) url.searchParams.set('key', key)
   const data = await requestJson(url, signal)
@@ -88,12 +89,20 @@ export async function lookupBook(value, { signal } = {}) {
   const isbn = normalizeIsbn(value)
   if (!isbnKey(isbn)) throw new Error('Informe um ISBN-10 ou ISBN-13 válido.')
 
+  let googleResult = null
   try {
-    const book = await googleBook(isbn, signal)
-    if (book) return book
+    googleResult = await googleBook(isbn, signal, 'pt')
   } catch {
     signal?.throwIfAborted()
   }
+  if (!googleResult) {
+    try {
+      googleResult = await googleBook(isbn, signal)
+    } catch {
+      signal?.throwIfAborted()
+    }
+  }
+  if (googleResult) return googleResult
 
   try {
     return await openLibraryBook(isbn, signal)

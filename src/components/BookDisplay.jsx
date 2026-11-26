@@ -11,15 +11,17 @@ export default function BookDisplay({ books }) {
   return <ul className={styles.books} data-display={preferences.mode} data-density={preferences.density}>
     {books.map((book) => (
       <li key={book.href} className={styles.item}><article>
-        <Link to={book.href} className={styles.entry}>
+        <Link to={book.href} className={styles.entry} aria-label={book.title}>
           <div className={styles.cover}><BookCover coverBlob={book.coverBlob} coverUrl={book.coverUrl} /></div>
-          <strong>{book.title}</strong>
         </Link>
-        {preferences.showAuthors && <span className={styles.author}>{book.author}</span>}
-        <span className={styles.format}>{book.formatLabel}</span>
-        {book.genre && <span className={styles.meta}>{book.genre}</span>}
-        <ReadingStatusSelect book={book} />
-        {book.kind === 'digital' && canReadDigitalBook(book) && <Link to={book.href + '/ler'}>Ler agora</Link>}
+        <div className={styles.details}>
+          <Link to={book.href} className={styles.title}><strong>{book.title}</strong></Link>
+          {preferences.showAuthors && <span className={styles.author}>{book.author}</span>}
+          <span className={styles.format}>{book.formatLabel}</span>
+          {book.genre && <span className={styles.meta}>{book.genre}</span>}
+          <ReadingStatusSelect book={book} />
+          {book.kind === 'digital' && canReadDigitalBook(book) && <Link to={book.href + '/ler'}>Ler agora</Link>}
+        </div>
       </article></li>
     ))}
   </ul>

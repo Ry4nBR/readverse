@@ -8,20 +8,36 @@ const google = { items: [{ volumeInfo: {
   title: 'Título de teste',
   authors: ['Autora de teste'],
   publishedDate: '1999-04',
+  description: 'Descrição em português.',
   industryIdentifiers: [{ identifier: '0306406152' }],
   imageLinks: { thumbnail: 'http://example.com/cover.jpg' },
 } }] }
 
 test('prioriza o Google Books e preserva campos ausentes', async (context) => {
-  const fetch = context.mock.method(globalThis, 'fetch', async () => Response.json(google))
+  const fetch = context.mock.method(globalThis, 'fetch', async (url) => {
+    assert.equal(url.searchParams.get('langRestrict'), 'pt')
+    return Response.json(google)
+  })
   const book = await lookupBook(isbn)
   assert.equal(fetch.mock.callCount(), 1)
   assert.equal(fetch.mock.calls[0].arguments[0].searchParams.get('q'), 'isbn:' + isbn)
+  assert.equal(fetch.mock.calls[0].arguments[0].searchParams.get('langRestrict'), 'pt')
   assert.equal(book.title, 'Título de teste')
   assert.equal(book.author, 'Autora de teste')
+  assert.equal(book.description, 'Descrição em português.')
   assert.equal(book.year, '1999')
   assert.equal(book.publisher, '')
   assert.equal(book.coverUrl, 'https://example.com/cover.jpg')
+})
+
+test('repete a consulta sem restrição de idioma quando o catálogo em português não encontra a edição', async (context) => {
+  const fetch = context.mock.method(globalThis, 'fetch', async (url) =>
+    Response.json(url.searchParams.has('langRestrict') ? { totalItems: 0 } : google))
+  const book = await lookupBook(isbn)
+  assert.equal(fetch.mock.callCount(), 2)
+  assert.equal(fetch.mock.calls[0].arguments[0].searchParams.get('langRestrict'), 'pt')
+  assert.equal(fetch.mock.calls[1].arguments[0].searchParams.has('langRestrict'), false)
+  assert.equal(book.title, 'Título de teste')
 })
 
 test('consulta a Open Library diante de um resultado incompatível ou falha', async (context) => {
@@ -35,7 +51,7 @@ test('consulta a Open Library diante de um resultado incompatível ou falha', as
       return Response.json({ ['ISBN:' + isbn]: { title: 'Edição correta', publishers: [{ name: 'Editora' }] } })
     })
     assert.equal((await lookupBook(isbn)).publisher, 'Editora')
-    assert.equal(fetch.mock.callCount(), 2)
+    assert.equal(fetch.mock.callCount(), 3)
     fetch.mock.restore()
   }
 })
@@ -64,7 +80,7 @@ test('diferencia pesquisa sem resultados de falha e rejeita ISBN inválido', asy
     Response.json(url.hostname === 'www.googleapis.com' ? { totalItems: 0 } : {}))
   assert.equal(await lookupBook(isbn), null)
   await assert.rejects(lookupBook('1234'), /ISBN/)
-  assert.equal(fetch.mock.callCount(), 2)
+  assert.equal(fetch.mock.callCount(), 3)
   fetch.mock.mockImplementation(async (url) => url.hostname === 'www.googleapis.com'
     ? new Response(null, { status: 429 }) : Response.json({}))
   assert.equal(await lookupBook(isbn), null)
