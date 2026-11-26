@@ -23,8 +23,11 @@
 .item > article { display: flex; align-items: flex-start; flex-direction: column; gap: .375rem; }
 .books[data-density='compact'] .item { padding: .5rem; }
 
-.entry { display: grid; width: 100%; gap: .625rem; text-decoration: none; }
-.entry:hover strong { text-decoration: underline; }
+.entry { display: block; width: 100%; text-decoration: none; }
+.entry:focus-visible, .title:focus-visible { outline: .125rem solid var(--accent); outline-offset: .125rem; }
+.title { color: inherit; text-decoration: none; }
+.title:hover strong { text-decoration: underline; }
+.details { display: flex; width: 100%; align-items: flex-start; flex-direction: column; gap: .375rem; }
 .cover { display: grid; place-items: center; }
 .cover > div { width: 100%; }
 .author, .meta { color: var(--muted); font-size: .875rem; }
@@ -46,6 +49,7 @@
 }
 
 .books[data-display='shelves'] .item {
+  position: relative;
   border: 0;
   border-radius: 0;
   border-bottom: .625rem solid color-mix(in srgb, var(--shelf-color, #805737) 54%, #563420);
@@ -53,8 +57,45 @@
   box-shadow: 0 .25rem .25rem -0.25rem rgb(0 0 0 / .42);
 }
 
+.books[data-display='shelves'] .item:hover,
+.books[data-display='shelves'] .item:focus-within { z-index: 1; }
+
+.books[data-display='shelves'] .item > article { position: relative; }
+
 .books[data-display='shelves'] .cover > div {
   width: min(100%, 7rem);
   border-radius: .2rem .45rem .45rem .2rem;
   box-shadow: -.1875rem .1875rem .375rem rgb(0 0 0 / .28);
+}
+
+.books[data-display='shelves'] .details {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  min-height: 100%;
+  padding: .625rem;
+  border: 1px solid var(--border);
+  border-radius: .5rem;
+  background: var(--surface);
+  box-shadow: 0 .25rem .75rem rgb(0 0 0 / .2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease;
+}
+
+.books[data-display='shelves'] .item:hover .details,
+.books[data-display='shelves'] .item:focus-within .details {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (hover: none) {
+  .books[data-display='shelves'] .details {
+    position: static;
+    min-height: 0;
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
