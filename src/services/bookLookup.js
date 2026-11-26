@@ -29,6 +29,7 @@ async function requestJson(url, signal, timeoutMs = 8000) {
 async function googleBook(isbn, signal) {
   const url = new URL('https://www.googleapis.com/books/v1/volumes')
   url.searchParams.set('q', 'isbn:' + isbn)
+  url.searchParams.set('langRestrict', 'pt')
   const key = import.meta.env?.VITE_GOOGLE_BOOKS_API_KEY?.trim()
   if (key) url.searchParams.set('key', key)
   const data = await requestJson(url, signal)

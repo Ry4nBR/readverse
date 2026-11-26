@@ -8,6 +8,7 @@ const google = { items: [{ volumeInfo: {
   title: 'Título de teste',
   authors: ['Autora de teste'],
   publishedDate: '1999-04',
+  description: 'Descrição em português.',
   industryIdentifiers: [{ identifier: '0306406152' }],
   imageLinks: { thumbnail: 'http://example.com/cover.jpg' },
 } }] }
@@ -17,8 +18,10 @@ test('prioriza o Google Books e preserva campos ausentes', async (context) => {
   const book = await lookupBook(isbn)
   assert.equal(fetch.mock.callCount(), 1)
   assert.equal(fetch.mock.calls[0].arguments[0].searchParams.get('q'), 'isbn:' + isbn)
+  assert.equal(fetch.mock.calls[0].arguments[0].searchParams.get('langRestrict'), 'pt')
   assert.equal(book.title, 'Título de teste')
   assert.equal(book.author, 'Autora de teste')
+  assert.equal(book.description, 'Descrição em português.')
   assert.equal(book.year, '1999')
   assert.equal(book.publisher, '')
   assert.equal(book.coverUrl, 'https://example.com/cover.jpg')
