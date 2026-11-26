@@ -1,6 +1,6 @@
-# BookShelf
+# Readverse
 
-Biblioteca pessoal digital desenvolvida em React, JavaScript e Vite, com estante para livros físicos, biblioteca para arquivos digitais (PDF, EPUB e MOBI), estantes personalizadas, acompanhamento de leitura e leitores integrados.
+Readverse é um universo particular de leitura, desenvolvido em React, JavaScript e Vite, com estante para livros físicos, biblioteca para arquivos digitais (PDF, EPUB e MOBI), estantes personalizadas, acompanhamento de leitura e leitores integrados.
 
 ## Objetivo
 
